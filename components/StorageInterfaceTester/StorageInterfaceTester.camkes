@@ -1,0 +1,12 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+import <if_OS_Storage.camkes>;
+
+component StorageInterfaceTester {
+    control;
+
+    // ChanMux_Storage interface
+    uses     if_OS_Storage chanMuxStorage_rpc;
+    dataport Buf           chanMuxStorage_port;
+
+}
