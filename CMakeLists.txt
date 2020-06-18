@@ -42,6 +42,10 @@ DeclareCAmkESComponent_ChanMux_Storage(
     ChanMux_Storage
 )
 
+DeclareCAmkESComponent_RamDisk(
+    RamDisk
+)
+
 #ROOT SERVER
 DeclareAndCreateCamkESSystem(main.camkes)
 GenerateSimulateScript()

@@ -15,6 +15,7 @@ DECLARE_COMPONENT_UART(UART)
 #include "ChanMux/ChanMux.camkes"
 
 #include "ChanMux_Storage/ChanMux_Storage.camkes"
+#include "RamDisk/RamDisk.camkes"
 
 assembly {
     composition {
@@ -32,15 +33,21 @@ assembly {
         // ChanMux_Storage
         component   ChanMux_Storage chanMux_storage;
 
-        connection  seL4RPCCall         storage_chanmux (from chanMux_storage.chanMux_rpc,           to chanMux.chanMux_rpc);
-        connection  seL4SharedData      dataConnection  (from chanMux_storage.chanMux_port,          to chanMux.storage_port);
+        connection  seL4RPCCall         storage_chanmux (from chanMux_storage.chanMux_rpc,   to chanMux.chanMux_rpc);
+        connection  seL4SharedData      dataConnection  (from chanMux_storage.chanMux_port,  to chanMux.storage_port);
         connection  seL4Notification    dataAvailableLan(from chanMux.storage_event_hasData, to chanMux_storage.chanMux_event_hasData);
+
+        // RamDisk
+        component   RamDisk             ramDisk;
 
         // ChanMux_Storage_tester
         component   StorageInterfaceTester tester;
 
         connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMux_storage.storage_rpc);
         connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMux_storage.storage_port);
+
+        connection  seL4RPCCall         tester_ramDisk             (from tester.ramDisk_rpc,         to ramDisk.storage_rpc);
+        connection  seL4SharedData      tester_ramDisk_port        (from tester.ramDisk_port,        to ramDisk.storage_port);
     }
 
     configuration {
@@ -52,6 +59,6 @@ assembly {
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
         chanMux_storage.chanMux_rpc_attributes = CHANMUX_ID;
+        ramDisk.storage_size = 2048;
     }
 }
-

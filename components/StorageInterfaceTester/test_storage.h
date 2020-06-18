@@ -37,13 +37,13 @@ typedef struct Storage
     void*       port;
 } Storage_t;
 
-void test_storage_size_pos                    (const Storage_t* storage);
+void test_storage_size_pos                    (int idx, const Storage_t*);
 
-void test_storage_writeReadEraseBegin_pos     (const Storage_t* storage);
-void test_storage_writeReadEraseMid_pos       (const Storage_t* storage);
-void test_storage_writeReadEraseEnd_pos       (const Storage_t* storage);
-void test_storage_writeReadEraseZeroBytes_pos (const Storage_t* storage);
-void test_storage_writeReadEraseOutside_neg   (const Storage_t* storage);
-void test_storage_writeReadEraseTooLarge_neg  (const Storage_t* storage);
+void test_storage_writeReadEraseBegin_pos     (int idx, const Storage_t*);
+void test_storage_writeReadEraseMid_pos       (int idx, const Storage_t*);
+void test_storage_writeReadEraseEnd_pos       (int idx, const Storage_t*);
+void test_storage_writeReadEraseZeroBytes_pos (int idx, const Storage_t*);
+void test_storage_writeReadEraseOutside_neg   (int idx, const Storage_t*);
+void test_storage_writeReadEraseTooLarge_neg  (int idx, const Storage_t*);
 
-void test_storage_neighborRegionsUntouched_pos(const Storage_t* storage);
+void test_storage_neighborRegionsUntouched_pos(int idx, const Storage_t*);
