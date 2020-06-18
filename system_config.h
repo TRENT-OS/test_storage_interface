@@ -44,3 +44,8 @@
 
 // we can't make this an enum, because CAmkES does not understand enums.
 #define CHANMUX_ID 101
+
+//-----------------------------------------------------------------------------
+// RamDisk
+//-----------------------------------------------------------------------------
+#define RAMDISK_SIZE_BYTES 2048

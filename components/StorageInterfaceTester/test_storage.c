@@ -65,9 +65,9 @@ static const char testData[]  =
     free(expectedEraseData); \
 } while(0)
 
-#define TEST_WRITE_READ_ERASE(storage, offset) do \
+#define TEST_WRITE_READ_ERASE(idx, storage, offset) do \
 { \
-    TEST_START(); \
+    TEST_START(idx); \
 \
     memset(storage->port, 0, TEST_DATA_SZ); \
 \
@@ -78,9 +78,9 @@ static const char testData[]  =
     TEST_FINISH(); \
 } while (0)
 
-void test_storage_size_pos(Storage_t const * const storage)
+void test_storage_size_pos(int idx, Storage_t const * const storage)
 {
-    TEST_START();
+    TEST_START(idx);
 
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
@@ -93,32 +93,44 @@ void test_storage_size_pos(Storage_t const * const storage)
     TEST_FINISH();
 }
 
-void test_storage_writeReadEraseBegin_pos(Storage_t const * const storage)
+void
+test_storage_writeReadEraseBegin_pos(
+    int idx,
+    Storage_t const * const storage)
 {
-    TEST_WRITE_READ_ERASE(storage, storageBeginOffset);
+    TEST_WRITE_READ_ERASE(idx, storage, storageBeginOffset);
 }
 
-void test_storage_writeReadEraseMid_pos(Storage_t const * const storage)
+void
+test_storage_writeReadEraseMid_pos(
+    int idx,
+    Storage_t const * const storage)
 {
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
     const size_t middleOfStorage = storageSize / 2;
 
-    TEST_WRITE_READ_ERASE(storage, middleOfStorage);
+    TEST_WRITE_READ_ERASE(idx, storage, middleOfStorage);
 }
 
-void test_storage_writeReadEraseEnd_pos(Storage_t const * const storage)
+void
+test_storage_writeReadEraseEnd_pos(
+    int idx,
+    Storage_t const * const storage)
 {
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
     const size_t endOfStorage = storageSize - TEST_DATA_SZ - 1;
 
-    TEST_WRITE_READ_ERASE(storage, endOfStorage);
+    TEST_WRITE_READ_ERASE(idx, storage, endOfStorage);
 }
 
-void test_storage_writeReadEraseZeroBytes_pos(Storage_t const * const storage)
+void
+test_storage_writeReadEraseZeroBytes_pos(
+    int idx,
+    Storage_t const * const storage)
 {
-    TEST_START();
+    TEST_START(idx);
 
     memset(storage->port, 0, TEST_DATA_SZ);
 
@@ -134,12 +146,15 @@ void test_storage_writeReadEraseZeroBytes_pos(Storage_t const * const storage)
     TEST_FINISH();
 }
 
-void test_storage_writeReadEraseOutside_neg(Storage_t const * const storage)
+void
+test_storage_writeReadEraseOutside_neg(
+    int idx,
+    Storage_t const * const storage)
 {
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
 
-    TEST_START();
+    TEST_START(idx);
 
     {
         size_t bytesWritten = (size_t)-1;
@@ -174,12 +189,15 @@ void test_storage_writeReadEraseOutside_neg(Storage_t const * const storage)
     TEST_FINISH();
 }
 
-void test_storage_writeReadEraseTooLarge_neg(Storage_t const * const storage)
+void
+test_storage_writeReadEraseTooLarge_neg(
+    int idx,
+    Storage_t const * const storage)
 {
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
 
-    TEST_START();
+    TEST_START(idx);
 
     {
         size_t bytesWritten = (size_t)-1;
@@ -234,9 +252,12 @@ void test_storage_writeReadEraseTooLarge_neg(Storage_t const * const storage)
  * Regions 1 and 3 shall never change when region 2 is manipulated.
  *
  */
-void test_storage_neighborRegionsUntouched_pos(Storage_t const * const storage)
+void
+test_storage_neighborRegionsUntouched_pos(
+    int idx,
+    Storage_t const * const storage)
 {
-    TEST_START();
+    TEST_START(idx);
 
     // Setting up untouched region at the front
     const char untouchedFront[] = "Please don't overwrite me!";
