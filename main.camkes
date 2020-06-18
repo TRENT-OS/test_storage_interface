@@ -1,0 +1,57 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+import <std_connector.camkes>;
+
+import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
+
+#include "system_config.h"
+
+
+#include "UART/uart.camkes"
+DECLARE_COMPONENT_UART(UART)
+
+#define CHANMUX_COMPONENT_NAME  ChanMux
+#define CHANMUX_UPPER_INTERFACES "components/ChanMux/ChanMux_upper_interface.camkes"
+#include "ChanMux/ChanMux.camkes"
+
+#include "ChanMux_Storage/ChanMux_Storage.camkes"
+
+assembly {
+    composition {
+
+        // UART
+        DECLARE_AND_CONNECT_INSTANCE_UART(
+            UART, uartDrv)
+
+        // ChanMux
+        DECLARE_AND_CONNECT_INSTANCE_CHANMUX(
+            ChanMux, chanMux,
+            uartDrv.UartDrv, uartDrv.inputDataPort,
+            uartDrv.Output)
+
+        // ChanMux_Storage
+        component   ChanMux_Storage chanMux_storage;
+
+        connection  seL4RPCCall         storage_chanmux (from chanMux_storage.chanMux_rpc,           to chanMux.chanMux_rpc);
+        connection  seL4SharedData      dataConnection  (from chanMux_storage.chanMux_port,          to chanMux.storage_port);
+        connection  seL4Notification    dataAvailableLan(from chanMux.storage_event_hasData, to chanMux_storage.chanMux_event_hasData);
+
+        // ChanMux_Storage_tester
+        component   StorageInterfaceTester tester;
+
+        connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMux_storage.storage_rpc);
+        connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMux_storage.storage_port);
+    }
+
+    configuration {
+        CONFIGURE_INSTANCE_UART(
+            uartDrv,
+            CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
+            CFG_CHANMUX_DEFAULT_UART_INTR)
+
+        // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
+        // naming scheme is <component>.<interface>_attributes = <badge ID>
+        chanMux_storage.chanMux_rpc_attributes = CHANMUX_ID;
+    }
+}
+
