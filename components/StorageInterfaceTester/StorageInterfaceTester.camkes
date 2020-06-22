@@ -9,6 +9,10 @@ component StorageInterfaceTester {
     uses     if_OS_Storage chanMuxStorage_rpc;
     dataport Buf           chanMuxStorage_port;
 
+    // ChanMux_Storage interface2
+    uses     if_OS_Storage chanMuxStorage_rpc2;
+    dataport Buf           chanMuxStorage_port2;
+
     // RamDisk interface
     uses     if_OS_Storage ramDisk_rpc;
     dataport Buf           ramDisk_port;

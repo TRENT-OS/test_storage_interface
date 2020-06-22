@@ -36,11 +36,13 @@
 //-----------------------------------------------------------------------------
 
 // we can't make this and enum, because CAmkES does not understand enums.
-#define CHANMUX_CHANNEL_NVM       6
+#define CHANMUX_CHANNEL_NVM_1       6
+#define CHANMUX_CHANNEL_NVM_2       9
 
 //-----------------------------------------------------------------------------
 // ChanMUX clients
 //-----------------------------------------------------------------------------
 
 // we can't make this and enum, because CAmkES does not understand enums.
-#define CHANMUX_ID 101
+#define CHANMUX_ID_TESTER_1        101
+#define CHANMUX_ID_TESTER_2        102

@@ -13,3 +13,7 @@
 // upper interface to ProxyNvm_tester
 dataport  Buf                 storage_port;
 emits     DataAvailableEvent  storage_event_hasData;
+
+// upper interface to ProxyNvm_tester
+dataport  Buf                 storage_port2;
+emits     DataAvailableEvent  storage_event_hasData2;

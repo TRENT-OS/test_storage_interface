@@ -28,6 +28,17 @@ int run()
             },
             .port = chanMuxStorage_port
         }
+        // chanMuxStorage2
+        {
+            .interface =
+            {
+                .write   = chanMuxStorage_rpc2_write,
+                .read    = chanMuxStorage_rpc2_read,
+                .erase   = chanMuxStorage_rpc2_erase,
+                .getSize = chanMuxStorage_rpc2_getSize
+            },
+            .port = chanMuxStorage_port2
+        },
     };
 
     const size_t    storageUnderTest_sz = sizeof(storagesUnderTest)

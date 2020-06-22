@@ -37,6 +37,13 @@ assembly {
         connection  seL4SharedData      dataConnection  (from chanMux_storage.chanMux_port,  to chanMux.storage_port);
         connection  seL4Notification    dataAvailableLan(from chanMux.storage_event_hasData, to chanMux_storage.chanMux_event_hasData);
 
+        // ChanMux_Storage
+        component   ChanMux_Storage chanMux_storage2;
+
+        connection  seL4RPCCall         storage_chanmux2 (from chanMux_storage2.chanMux_rpc,   to chanMux.chanMux_rpc);
+        connection  seL4SharedData      dataConnection2  (from chanMux_storage2.chanMux_port,  to chanMux.storage_port2);
+        connection  seL4Notification    dataAvailableLan2(from chanMux.storage_event_hasData2, to chanMux_storage2.chanMux_event_hasData);
+
         // RamDisk
         component   RamDisk             ramDisk;
 
@@ -45,6 +52,9 @@ assembly {
 
         connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMux_storage.storage_rpc);
         connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMux_storage.storage_port);
+
+        connection  seL4RPCCall         tester_chanMux_storage2     (from tester.chanMuxStorage_rpc2,  to chanMux_storage2.storage_rpc);
+        connection  seL4SharedData      tester_chanMux_storage_port2(from tester.chanMuxStorage_port2, to chanMux_storage2.storage_port);
 
         connection  seL4RPCCall         tester_ramDisk             (from tester.ramDisk_rpc,         to ramDisk.storage_rpc);
         connection  seL4SharedData      tester_ramDisk_port        (from tester.ramDisk_port,        to ramDisk.storage_port);
@@ -58,7 +68,9 @@ assembly {
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
-        chanMux_storage.chanMux_rpc_attributes = CHANMUX_ID;
+        chanMux_storage.chanMux_rpc_attributes  = CHANMUX_ID_TESTER_1;
+        chanMux_storage2.chanMux_rpc_attributes = CHANMUX_ID_TESTER_2;
+
         ramDisk.storage_size = 2048;
     }
 }
