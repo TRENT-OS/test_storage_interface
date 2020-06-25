@@ -7,7 +7,7 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 #include "system_config.h"
 
 
-#include "UART/uart.camkes"
+#include "UART/Uart.camkes"
 DECLARE_COMPONENT_UART(UART)
 
 #define CHANMUX_COMPONENT_NAME  ChanMux
@@ -25,10 +25,7 @@ assembly {
             UART, uartDrv)
 
         // ChanMux
-        DECLARE_AND_CONNECT_INSTANCE_CHANMUX(
-            ChanMux, chanMux,
-            uartDrv.UartDrv, uartDrv.inputDataPort,
-            uartDrv.Output)
+        DECLARE_AND_CONNECT_INSTANCE_CHANMUX_TO_UART(ChanMux, chanMux, uartDrv)
 
         // ChanMux_Storage
         component   ChanMux_Storage chanMux_storage;
