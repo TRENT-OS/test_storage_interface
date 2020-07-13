@@ -42,11 +42,8 @@ int run()
 
         test_storage_writeReadEraseZeroBytes_pos (idx, &storagesUnderTest[idx]);
 
-        // TODO Below tests are disabled as they crash chanMux.
-        // See https://jira.hensoldt-cyber.systems/browse/SEOS-1431 for more
-        // details.
-        //test_storage_writeReadEraseOutside_neg   (idx, &storagesUnderTest[idx]);
-        //test_storage_writeReadEraseTooLarge_neg  (idx, &storagesUnderTest[idx]);
+        test_storage_writeReadEraseOutside_neg   (idx, &storagesUnderTest[idx]);
+        test_storage_writeReadEraseTooLarge_neg  (idx, &storagesUnderTest[idx]);
 
         test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
     }

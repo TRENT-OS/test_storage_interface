@@ -197,6 +197,8 @@ test_storage_writeReadEraseTooLarge_neg(
     size_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
 
+    ++storageSize; // Writing more bytes than the storage size.
+
     TEST_START(idx);
 
     {
