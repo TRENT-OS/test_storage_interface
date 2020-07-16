@@ -10,9 +10,9 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 #include "UART/Uart.camkes"
 DECLARE_COMPONENT_UART(UART)
 
-#define CHANMUX_COMPONENT_NAME  ChanMux
-#define CHANMUX_UPPER_INTERFACES "components/ChanMux/ChanMux_upper_interface.camkes"
 #include "ChanMux/ChanMux.camkes"
+ChanMux_DEFINE_COMPONENT(ChanMux,
+        chanMuxStorage, chan)
 
 #include "ChanMux_Storage/ChanMux_Storage.camkes"
 
@@ -27,13 +27,13 @@ assembly {
             UART, uartDrv)
 
         // ChanMux
-        DECLARE_AND_CONNECT_INSTANCE_CHANMUX_TO_UART(ChanMux, chanMux, uartDrv)
+        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux, uartDrv)
 
         // ChanMux_Storage
         component   ChanMux_Storage chanMuxStorage;
 
-        CHANMUX_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
-        CHANMUX_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
+        ChanMux_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
+        ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
 
         // RamDisk
         component   RamDisk             ramDisk;
@@ -56,7 +56,7 @@ assembly {
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
-        CHANMUX_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
+        ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
         ramDisk.storage_size_bytes = 2048;
     }
 }
