@@ -12,22 +12,30 @@
 
 #include "OS_Error.h"
 #include "stddef.h"
+#include "stdio.h"
 
 typedef
 OS_Error_t
 (*StorageAction_t)(
-    size_t  const address,
+    off_t   const offset,
     size_t  const size,
     size_t* const result);
 
 typedef
-OS_Error_t (*StorageGetter_t)(size_t* result);
+OS_Error_t
+(*StorageErase_t)(
+    off_t  const offset,
+    off_t  const size,
+    off_t* const erased);
+
+typedef
+OS_Error_t (*StorageGetter_t)(off_t* result);
 
 typedef struct StorageIf
 {
     StorageAction_t write;
     StorageAction_t read;
-    StorageAction_t erase;
+    StorageErase_t  erase;
     StorageGetter_t getSize;
 } StorageIf_t;
 
