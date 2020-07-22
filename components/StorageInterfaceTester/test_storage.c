@@ -215,7 +215,7 @@ test_storage_writeReadEraseIntMin_neg(
 }
 
 void
-test_storage_writeReadEraseTooLarge_neg(
+test_storage_writeReadEraseSizeTooLarge_neg(
     int idx,
     Storage_t const * const storage)
 {
@@ -225,6 +225,19 @@ test_storage_writeReadEraseTooLarge_neg(
     ++storageSize; // Writing more bytes than the storage size.
 
     TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, storageSize);
+}
+
+void
+test_storage_writeReadEraseSizeMax_neg(
+    int idx,
+    Storage_t const * const storage)
+{
+    off_t storageSize = 0U;
+    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+
+    ++storageSize; // Writing more bytes than the storage size.
+
+    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, SIZE_MAX);
 }
 
 /**

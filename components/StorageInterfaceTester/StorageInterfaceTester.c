@@ -47,7 +47,10 @@ int run()
         test_storage_writeReadEraseIntMax_neg    (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseIntMin_neg    (idx, &storagesUnderTest[idx]);
 
-        test_storage_writeReadEraseTooLarge_neg  (idx, &storagesUnderTest[idx]);
+        test_storage_writeReadEraseSizeTooLarge_neg(
+            idx, &storagesUnderTest[idx]);
+
+        test_storage_writeReadEraseSizeMax_neg(idx, &storagesUnderTest[idx]);
 
         test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
     }
