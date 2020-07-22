@@ -145,6 +145,81 @@ test_storage_writeReadEraseZeroBytes_pos(
     TEST_FINISH();
 }
 
+/**
+ * @brief   Tests if memory regions in front and at the back of the desired area
+ *          are untouched during the read, write and erase operations.
+ *
+ * Data layout of the storage during the test:
+ *
+ * region index: |        1       |     2    |       3       |
+ * content:      | untouchedFront | testData | untouchedBack |
+ *
+ * Regions 1 and 3 shall never change when region 2 is manipulated.
+ *
+ */
+void
+test_storage_neighborRegionsUntouched_pos(
+    int idx,
+    Storage_t const * const storage)
+{
+    TEST_START(idx);
+
+    // Setting up untouched region at the front
+    const char untouchedFront[] = "Please don't overwrite me!";
+    const off_t untouchedFrontAddress = storageBeginOffset;
+    const size_t untouchedFront_sz = sizeof(untouchedFront)
+                                   / sizeof(*untouchedFront);
+
+    TEST_WRITE(
+        storage,
+        untouchedFrontAddress,
+        untouchedFront,
+        untouchedFront_sz);
+
+    TEST_READ(
+        storage,
+        untouchedFrontAddress,
+        untouchedFront,
+        untouchedFront_sz);
+
+    const off_t testDataAddress = untouchedFrontAddress + untouchedFront_sz;
+
+    // Setting up untouched region at the back
+    const char untouchedBack[] = "!em etirwrevo t'nod esaelP";
+    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
+    const size_t untouchedBack_sz = sizeof(untouchedBack)
+                                  / sizeof(*untouchedBack);
+
+    TEST_WRITE(storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
+    TEST_READ (storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
+
+    // Writing and verifying test data.
+    TEST_WRITE(storage, testDataAddress, testData, TEST_DATA_SZ);
+    TEST_READ (storage, testDataAddress, testData, TEST_DATA_SZ);
+    TEST_ERASE(storage, testDataAddress, TEST_DATA_SZ);
+
+    // Verifying that front and back regions were untouched.
+    TEST_READ(
+        storage,
+        untouchedFrontAddress,
+        untouchedFront,
+        untouchedFront_sz);
+
+    TEST_READ(
+        storage,
+        untouchedBackAddress,
+        untouchedBack,
+        untouchedBack_sz);
+
+    //Clean up
+    TEST_ERASE(
+        storage,
+        untouchedFrontAddress,
+        (untouchedFront_sz + TEST_DATA_SZ + untouchedBack_sz));
+
+    TEST_FINISH();
+}
+
 #define TEST_WRITE_READ_ERASE_NEG(idx, storage, offset, size) do               \
 {                                                                              \
     TEST_START(idx);                                                           \
@@ -238,79 +313,4 @@ test_storage_writeReadEraseSizeMax_neg(
     ++storageSize; // Writing more bytes than the storage size.
 
     TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, SIZE_MAX);
-}
-
-/**
- * @brief   Tests if memory regions in front and at the back of the desired area
- *          are untouched during the read, write and erase operations.
- *
- * Data layout of the storage during the test:
- *
- * region index: |        1       |     2    |       3       |
- * content:      | untouchedFront | testData | untouchedBack |
- *
- * Regions 1 and 3 shall never change when region 2 is manipulated.
- *
- */
-void
-test_storage_neighborRegionsUntouched_pos(
-    int idx,
-    Storage_t const * const storage)
-{
-    TEST_START(idx);
-
-    // Setting up untouched region at the front
-    const char untouchedFront[] = "Please don't overwrite me!";
-    const off_t untouchedFrontAddress = storageBeginOffset;
-    const size_t untouchedFront_sz = sizeof(untouchedFront)
-                                   / sizeof(*untouchedFront);
-
-    TEST_WRITE(
-        storage,
-        untouchedFrontAddress,
-        untouchedFront,
-        untouchedFront_sz);
-
-    TEST_READ(
-        storage,
-        untouchedFrontAddress,
-        untouchedFront,
-        untouchedFront_sz);
-
-    const off_t testDataAddress = untouchedFrontAddress + untouchedFront_sz;
-
-    // Setting up untouched region at the back
-    const char untouchedBack[] = "!em etirwrevo t'nod esaelP";
-    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
-    const size_t untouchedBack_sz = sizeof(untouchedBack)
-                                  / sizeof(*untouchedBack);
-
-    TEST_WRITE(storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
-    TEST_READ (storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
-
-    // Writing and verifying test data.
-    TEST_WRITE(storage, testDataAddress, testData, TEST_DATA_SZ);
-    TEST_READ (storage, testDataAddress, testData, TEST_DATA_SZ);
-    TEST_ERASE(storage, testDataAddress, TEST_DATA_SZ);
-
-    // Verifying that front and back regions were untouched.
-    TEST_READ(
-        storage,
-        untouchedFrontAddress,
-        untouchedFront,
-        untouchedFront_sz);
-
-    TEST_READ(
-        storage,
-        untouchedBackAddress,
-        untouchedBack,
-        untouchedBack_sz);
-
-    //Clean up
-    TEST_ERASE(
-        storage,
-        untouchedFrontAddress,
-        (untouchedFront_sz + TEST_DATA_SZ + untouchedBack_sz));
-
-    TEST_FINISH();
 }

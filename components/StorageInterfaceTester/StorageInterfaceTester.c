@@ -36,11 +36,12 @@ int run()
     for(size_t idx = 0U; idx < storageUnderTest_sz; ++idx)
     {
         test_storage_size_pos                    (idx, &storagesUnderTest[idx]);
+
         test_storage_writeReadEraseBegin_pos     (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseMid_pos       (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseEnd_pos       (idx, &storagesUnderTest[idx]);
-
         test_storage_writeReadEraseZeroBytes_pos (idx, &storagesUnderTest[idx]);
+        test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
 
         test_storage_writeReadEraseOutside_neg   (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseNegOffset_neg (idx, &storagesUnderTest[idx]);
@@ -51,8 +52,6 @@ int run()
             idx, &storagesUnderTest[idx]);
 
         test_storage_writeReadEraseSizeMax_neg(idx, &storagesUnderTest[idx]);
-
-        test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
     }
 
     return 0;
