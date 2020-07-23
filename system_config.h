@@ -46,6 +46,14 @@
 #define CHANMUX_ID 101
 
 //-----------------------------------------------------------------------------
+// StorageServer clients
+//-----------------------------------------------------------------------------
+
+#define STORAGESERVER_TESTER_IF1_ID 1
+#define STORAGESERVER_TESTER_IF2_ID 2
+#define STORAGESERVER_TESTER_IF3_ID 3
+
+//-----------------------------------------------------------------------------
 // RamDisk
 //-----------------------------------------------------------------------------
-#define RAMDISK_SIZE_BYTES 2048
+#define RAMDISK_SIZE_BYTES 3 * 2048

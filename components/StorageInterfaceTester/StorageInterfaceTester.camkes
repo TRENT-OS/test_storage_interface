@@ -12,4 +12,16 @@ component StorageInterfaceTester {
     // RamDisk interface
     uses     if_OS_Storage ramDisk_rpc;
     dataport Buf           ramDisk_port;
+
+    // StorageServer 1st interface
+    uses     if_OS_Storage storageServer1_rpc;
+    dataport Buf           storageServer1_port;
+
+    // StorageServer 2nd interface
+    uses     if_OS_Storage storageServer2_rpc;
+    dataport Buf           storageServer2_port;
+
+    // StorageServer 3rd interface
+    uses     if_OS_Storage storageServer3_rpc;
+    dataport Buf           storageServer3_port;
 }

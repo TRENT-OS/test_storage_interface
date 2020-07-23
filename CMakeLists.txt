@@ -47,6 +47,10 @@ DeclareCAmkESComponent_RamDisk(
     system_config
 )
 
+DeclareCAmkESComponent_StorageServer(
+    StorageServer
+)
+
 #ROOT SERVER
 DeclareAndCreateCamkESSystem(main.camkes)
 GenerateSimulateScript()

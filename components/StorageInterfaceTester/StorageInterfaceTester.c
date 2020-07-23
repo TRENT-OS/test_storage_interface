@@ -27,6 +27,39 @@ int run()
                 .getSize = chanMuxStorage_rpc_getSize
             },
             .port = chanMuxStorage_port
+        },
+        // storageServer 1
+        {
+            .interface =
+            {
+                .write   = storageServer1_rpc_write,
+                .read    = storageServer1_rpc_read,
+                .erase   = storageServer1_rpc_erase,
+                .getSize = storageServer1_rpc_getSize
+            },
+            .port = storageServer1_port
+        },
+        // storageServer 2
+        {
+            .interface =
+            {
+                .write   = storageServer2_rpc_write,
+                .read    = storageServer2_rpc_read,
+                .erase   = storageServer2_rpc_erase,
+                .getSize = storageServer2_rpc_getSize
+            },
+            .port = storageServer2_port
+        },
+        // storageServer 3
+        {
+            .interface =
+            {
+                .write   = storageServer3_rpc_write,
+                .read    = storageServer3_rpc_read,
+                .erase   = storageServer3_rpc_erase,
+                .getSize = storageServer3_rpc_getSize
+            },
+            .port = storageServer3_port
         }
     };
 
