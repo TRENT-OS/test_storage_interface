@@ -84,6 +84,8 @@ void test_storage_size_pos(int idx, Storage_t const * const storage)
     off_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
 
+    Debug_LOG_DEBUG("Storage under test's size is: %" PRIiMAX, storageSize);
+
     // Storage shall be at least three times bigger than the test string, so
     // that it can be stored at the beginning, in the center and at the end of
     // the storage.
