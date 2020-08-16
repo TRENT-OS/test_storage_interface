@@ -29,6 +29,12 @@ static const char testData[]  =
 "FD2FED47B2984740AD8C8339F81C9848"
 "48B421069BF04E7C809517DB7EA6636A";
 
+static
+off_t
+roundDownToBLockSize(
+    Storage_t const * const storage,
+    off_t value);
+
 #define TEST_DATA_SZ (sizeof(testData) / sizeof(*testData))
 #define ERASED_PATTERN 0xFF
 
@@ -36,26 +42,44 @@ static const char testData[]  =
 // a case of the failure.
 #define TEST_WRITE(storage, offset, data, size) do \
 { \
+    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesWritten = 0U; \
-    memcpy(storage->port, data, size); \
-    TEST_SUCCESS(storage->interface.write(offset, size, &bytesWritten)); \
-    ASSERT_EQ_SZ(size, bytesWritten); \
+    memcpy(storage->port, data, roundedDownSize); \
+    TEST_SUCCESS( \
+        storage->interface.write( \
+            roundDownToBLockSize(storage, offset), \
+            roundedDownSize, \
+            &bytesWritten)); \
+    ASSERT_EQ_SZ(roundedDownSize, bytesWritten); \
 } while(0)
 
 #define TEST_READ(storage, offset, expectedData, size) do \
 { \
+    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesRead = 0U; \
-    memset(storage->port, 0, size); \
-    TEST_SUCCESS(storage->interface.read(offset, size, &bytesRead)); \
-    ASSERT_EQ_SZ(size, bytesRead); \
-    ASSERT_EQ_INT(0, memcmp(storage->port, expectedData, size)); \
+    memset(storage->port, 0, roundedDownSize); \
+    TEST_SUCCESS( \
+        storage->interface.read( \
+            roundDownToBLockSize(storage, offset), \
+            roundedDownSize, \
+            &bytesRead)); \
+\
+    ASSERT_EQ_SZ(roundedDownSize, bytesRead); \
+    ASSERT_EQ_INT(0, memcmp(storage->port, expectedData, roundedDownSize)); \
 } while(0)
 
 #define TEST_ERASE(storage, offset, size) do \
 { \
     off_t bytesErased = -1; \
-    TEST_SUCCESS(storage->interface.erase(offset, size, &bytesErased)); \
-    ASSERT_EQ_INT_MAX((off_t)size, bytesErased); \
+    TEST_SUCCESS( \
+        storage->interface.erase( \
+            roundDownToBLockSize(storage, offset), \
+            roundDownToBLockSize(storage, size), \
+            &bytesErased)); \
+\
+    ASSERT_EQ_INT_MAX( \
+        (off_t)roundDownToBLockSize(storage, size), \
+        bytesErased); \
 \
     uint8_t* expectedEraseData = malloc(size); \
     memset(expectedEraseData, ERASED_PATTERN, size); \
@@ -180,17 +204,35 @@ test_storage_neighborRegionsUntouched_pos(
 {
     TEST_START(idx);
 
+    size_t storageBlockSize = 0U;
+    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+
     // Setting up untouched region at the front
-    const char untouchedFront[] = "Please don't overwrite me!";
+    const char untouchedFrontContent[] = "Please don't overwrite me!";
+
+    const size_t untouchedFront_sz =
+        storageBlockSize > sizeof(untouchedFrontContent)
+            ? storageBlockSize
+            : sizeof(untouchedFrontContent);
+
+    char* untouchedFront = malloc(untouchedFront_sz);
+
+    memcpy(
+        untouchedFront + untouchedFront_sz - sizeof(untouchedFrontContent),
+        untouchedFrontContent,
+        sizeof(untouchedFrontContent));
+
     const off_t untouchedFrontAddress = storageBeginOffset;
-    const size_t untouchedFront_sz = sizeof(untouchedFront)
-                                   / sizeof(*untouchedFront);
+
+    Debug_LOG_TRACE("Writing the front region.");
 
     TEST_WRITE(
         storage,
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
+
+    Debug_LOG_TRACE("Verifying the front region.");
 
     TEST_READ(
         storage,
@@ -201,26 +243,43 @@ test_storage_neighborRegionsUntouched_pos(
     const off_t testDataAddress = untouchedFrontAddress + untouchedFront_sz;
 
     // Setting up untouched region at the back
-    const char untouchedBack[] = "!em etirwrevo t'nod esaelP";
-    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
-    const size_t untouchedBack_sz = sizeof(untouchedBack)
-                                  / sizeof(*untouchedBack);
+    const char untouchedBackContent[] = "Do not ever touch this!";
 
+    const size_t untouchedBack_sz =
+        storageBlockSize > sizeof(untouchedBackContent)
+            ? storageBlockSize
+            : sizeof(untouchedBackContent);
+
+    char* untouchedBack = malloc(untouchedBack_sz);
+
+    memcpy(
+        untouchedBack,
+        untouchedBackContent,
+        sizeof(untouchedBackContent));
+
+    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
+
+    Debug_LOG_TRACE("Verifying the back region.");
     TEST_WRITE(storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
+    Debug_LOG_TRACE("Verifying the back region.");
     TEST_READ (storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
 
-    // Writing and verifying test data.
+    // Writing verifying and erasing the test data.
+    Debug_LOG_TRACE("Writing the test data.");
     TEST_WRITE(storage, testDataAddress, testData, TEST_DATA_SZ);
+    Debug_LOG_TRACE("Verifying the test data.");
     TEST_READ (storage, testDataAddress, testData, TEST_DATA_SZ);
+    Debug_LOG_TRACE("Erasing the test data.");
     TEST_ERASE(storage, testDataAddress, TEST_DATA_SZ);
 
-    // Verifying that front and back regions were untouched.
+    Debug_LOG_TRACE("Verifying that front region was untouched.");
     TEST_READ(
         storage,
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
 
+    Debug_LOG_TRACE("Verifying that back region was untouched.");
     TEST_READ(
         storage,
         untouchedBackAddress,
@@ -234,6 +293,9 @@ test_storage_neighborRegionsUntouched_pos(
         (untouchedFront_sz + TEST_DATA_SZ + untouchedBack_sz));
 
     TEST_FINISH();
+
+    free(untouchedFront);
+    free(untouchedBack);
 }
 
 #define TEST_WRITE_READ_ERASE_NEG(idx, storage, offset, size) do               \
@@ -329,4 +391,25 @@ test_storage_writeReadEraseSizeMax_neg(
     ++storageSize; // Writing more bytes than the storage size.
 
     TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, SIZE_MAX);
+}
+
+off_t
+roundDownToBLockSize(
+    Storage_t const * const storage,
+    off_t value)
+{
+    size_t storageBlockSize = 0U;
+    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+
+    const off_t adjustedValue = (value / storageBlockSize)
+                                        * storageBlockSize;
+
+    Debug_LOG_DEBUG(
+        "Adjusting given value to be aligned with the block size: "
+        "value = %" PRIiMAX " "
+        "adjustedValue = %" PRIiMAX,
+        value,
+        adjustedValue);
+
+    return adjustedValue;
 }
