@@ -24,4 +24,8 @@ component StorageInterfaceTester {
     // StorageServer 3rd interface
     uses     if_OS_Storage storageServer3_rpc;
     dataport Buf           storageServer3_port;
+
+    // Sdhc interface
+    uses     if_OS_Storage sdhc_rpc;
+    dataport Buf           sdhc_port;
 }

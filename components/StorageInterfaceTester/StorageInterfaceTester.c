@@ -65,6 +65,18 @@ int run()
                 .getBlockSize = storageServer1_rpc_getBlockSize
             },
             .port = storageServer3_port
+        },
+        // sdHostController
+        {
+            .interface =
+            {
+                .write        = sdhc_rpc_write,
+                .read         = sdhc_rpc_read,
+                .erase        = sdhc_rpc_erase,
+                .getSize      = sdhc_rpc_getSize,
+                .getBlockSize = sdhc_rpc_getBlockSize
+            },
+            .port = sdhc_port
         }
     };
 

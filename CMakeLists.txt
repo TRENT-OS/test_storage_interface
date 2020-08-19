@@ -51,6 +51,10 @@ DeclareCAmkESComponent_StorageServer(
     StorageServer
 )
 
+DeclareCAmkESComponent_SdHostController(
+    Sdhc
+)
+
 #ROOT SERVER
 DeclareAndCreateCamkESSystem(main.camkes)
 GenerateSimulateScript()

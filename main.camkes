@@ -22,6 +22,9 @@ DECLARE_COMPONENT_RamDisk(RamDisk)
 #include "StorageServer/camkes/StorageServer.camkes"
 DECLARE_COMPONENT_StorageServer(StorageServer)
 
+#include "SdHostController/SdHostController.camkes"
+DECLARE_COMPONENT_SDHC(Sdhc);
+
 assembly {
     composition {
 
@@ -44,6 +47,7 @@ assembly {
         // ChanMux_Storage_tester
         component   StorageInterfaceTester tester;
 
+
         connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMuxStorage.storage_rpc);
         connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMuxStorage.storage_port);
 
@@ -59,6 +63,13 @@ assembly {
             tester.storageServer1_rpc, tester.storageServer1_port,
             tester.storageServer2_rpc, tester.storageServer2_port,
             tester.storageServer3_rpc, tester.storageServer3_port)
+
+        // SDHC
+        DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
+
+        connection  seL4RPCCall         tester_sdhc_storage        (from tester.sdhc_rpc,  to sdhc.storage_rpc);
+        connection  seL4SharedData      tester_sdhc_storage_port   (from tester.sdhc_port, to sdhc.storage_port);
+
     }
 
     configuration {
@@ -79,6 +90,8 @@ assembly {
             tester, storageServer2_rpc, STORAGESERVER_TESTER_IF2_ID)
         ASSIGN_CLIENT_BADGE_StorageServer(
             tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
+
+        CONFIGURE_INSTANCE_SDHC(sdhc, 4)
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
