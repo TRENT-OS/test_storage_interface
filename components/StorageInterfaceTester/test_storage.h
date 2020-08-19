@@ -29,14 +29,19 @@ OS_Error_t
     off_t* const erased);
 
 typedef
-OS_Error_t (*StorageGetter_t)(off_t* result);
+OS_Error_t (*StorageGetSize_t)(off_t* result);
 
+typedef
+OS_Error_t (*StorageGetBlockSize_t)(size_t* result);
+
+typedef
 typedef struct StorageIf
 {
-    StorageAction_t write;
-    StorageAction_t read;
-    StorageErase_t  erase;
-    StorageGetter_t getSize;
+    StorageAction_t         write;
+    StorageAction_t         read;
+    StorageErase_t          erase;
+    StorageGetSize_t        getSize;
+    StorageGetBlockSize_t   getBlockSize;
 } StorageIf_t;
 
 typedef struct Storage
@@ -46,6 +51,7 @@ typedef struct Storage
 } Storage_t;
 
 void test_storage_size_pos                          (int idx, const Storage_t*);
+void test_storage_blockSize_pos                     (int idx, const Storage_t*);
 
 void test_storage_writeReadEraseBegin_pos           (int idx, const Storage_t*);
 void test_storage_writeReadEraseMid_pos             (int idx, const Storage_t*);

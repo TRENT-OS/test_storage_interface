@@ -94,6 +94,20 @@ void test_storage_size_pos(int idx, Storage_t const * const storage)
     TEST_FINISH();
 }
 
+void test_storage_blockSize_pos(int idx, Storage_t const * const storage)
+{
+    TEST_START(idx);
+
+    size_t storageBlockSize = 0U;
+    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+
+    // Different storages have different block sizes, but nevertheless the block
+    // size must always be greater than 0.
+    ASSERT_LT_SZ(0U, storageBlockSize);
+
+    TEST_FINISH();
+}
+
 void
 test_storage_writeReadEraseBegin_pos(
     int idx,

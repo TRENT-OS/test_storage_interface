@@ -10,10 +10,11 @@ int run()
         {
             .interface =
             {
-                .write   = ramDisk_rpc_write,
-                .read    = ramDisk_rpc_read,
-                .erase   = ramDisk_rpc_erase,
-                .getSize = ramDisk_rpc_getSize
+                .write        = ramDisk_rpc_write,
+                .read         = ramDisk_rpc_read,
+                .erase        = ramDisk_rpc_erase,
+                .getSize      = ramDisk_rpc_getSize,
+                .getBlockSize = ramDisk_rpc_getBlockSize
             },
             .port = ramDisk_port
         },
@@ -21,10 +22,11 @@ int run()
         {
             .interface =
             {
-                .write   = chanMuxStorage_rpc_write,
-                .read    = chanMuxStorage_rpc_read,
-                .erase   = chanMuxStorage_rpc_erase,
-                .getSize = chanMuxStorage_rpc_getSize
+                .write        = chanMuxStorage_rpc_write,
+                .read         = chanMuxStorage_rpc_read,
+                .erase        = chanMuxStorage_rpc_erase,
+                .getSize      = chanMuxStorage_rpc_getSize,
+                .getBlockSize = chanMuxStorage_rpc_getBlockSize
             },
             .port = chanMuxStorage_port
         },
@@ -32,10 +34,11 @@ int run()
         {
             .interface =
             {
-                .write   = storageServer1_rpc_write,
-                .read    = storageServer1_rpc_read,
-                .erase   = storageServer1_rpc_erase,
-                .getSize = storageServer1_rpc_getSize
+                .write        = storageServer1_rpc_write,
+                .read         = storageServer1_rpc_read,
+                .erase        = storageServer1_rpc_erase,
+                .getSize      = storageServer1_rpc_getSize,
+                .getBlockSize = storageServer1_rpc_getBlockSize
             },
             .port = storageServer1_port
         },
@@ -43,10 +46,11 @@ int run()
         {
             .interface =
             {
-                .write   = storageServer2_rpc_write,
-                .read    = storageServer2_rpc_read,
-                .erase   = storageServer2_rpc_erase,
-                .getSize = storageServer2_rpc_getSize
+                .write        = storageServer2_rpc_write,
+                .read         = storageServer2_rpc_read,
+                .erase        = storageServer2_rpc_erase,
+                .getSize      = storageServer2_rpc_getSize,
+                .getBlockSize = storageServer1_rpc_getBlockSize
             },
             .port = storageServer2_port
         },
@@ -54,10 +58,11 @@ int run()
         {
             .interface =
             {
-                .write   = storageServer3_rpc_write,
-                .read    = storageServer3_rpc_read,
-                .erase   = storageServer3_rpc_erase,
-                .getSize = storageServer3_rpc_getSize
+                .write        = storageServer3_rpc_write,
+                .read         = storageServer3_rpc_read,
+                .erase        = storageServer3_rpc_erase,
+                .getSize      = storageServer3_rpc_getSize,
+                .getBlockSize = storageServer1_rpc_getBlockSize
             },
             .port = storageServer3_port
         }
@@ -69,6 +74,7 @@ int run()
     for(size_t idx = 0U; idx < storageUnderTest_sz; ++idx)
     {
         test_storage_size_pos                    (idx, &storagesUnderTest[idx]);
+        test_storage_blockSize_pos               (idx, &storagesUnderTest[idx]);
 
         test_storage_writeReadEraseBegin_pos     (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseMid_pos       (idx, &storagesUnderTest[idx]);
