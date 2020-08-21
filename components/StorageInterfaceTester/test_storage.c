@@ -54,7 +54,7 @@ roundDownToBLockSize(
 { \
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesWritten = 0U; \
-    memcpy(storage->port, data, roundedDownSize); \
+    memcpy(OS_Dataport_getBuf(storage->port), data, roundedDownSize); \
     TEST_SUCCESS( \
         storage->interface.write( \
             roundDownToBLockSize(storage, offset), \
@@ -67,7 +67,7 @@ roundDownToBLockSize(
 { \
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesRead = 0U; \
-    memset(storage->port, 0, roundedDownSize); \
+    memset(OS_Dataport_getBuf(storage->port), 0, roundedDownSize); \
     TEST_SUCCESS( \
         storage->interface.read( \
             roundDownToBLockSize(storage, offset), \
@@ -75,7 +75,12 @@ roundDownToBLockSize(
             &bytesRead)); \
 \
     ASSERT_EQ_SZ(roundedDownSize, bytesRead); \
-    ASSERT_EQ_INT(0, memcmp(storage->port, expectedData, roundedDownSize)); \
+    ASSERT_EQ_INT( \
+        0, \
+        memcmp(OS_Dataport_getBuf(storage->port), \
+            expectedData, \
+            roundedDownSize)); \
+\
 } while(0)
 
 #define TEST_ERASE(storage, offset, size) do \
@@ -102,7 +107,7 @@ roundDownToBLockSize(
 { \
     TEST_START(idx); \
 \
-    memset(storage->port, 0, TEST_DATA_SZ); \
+    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ); \
 \
     TEST_WRITE(storage, offset, testData, TEST_DATA_SZ); \
     TEST_READ (storage, offset, testData, TEST_DATA_SZ); \
@@ -181,7 +186,7 @@ test_storage_writeReadEraseZeroBytes_pos(
 {
     TEST_START(idx);
 
-    memset(storage->port, 0, TEST_DATA_SZ);
+    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ);
 
     const off_t testOffset = 0;
 
@@ -314,7 +319,7 @@ test_storage_neighborRegionsUntouched_pos(
                                                                                \
     {                                                                          \
       size_t bytesWritten = (size_t)-1;                                        \
-      memcpy(storage->port, testData, TEST_DATA_SZ);                           \
+      memcpy(OS_Dataport_getBuf(storage->port), testData, TEST_DATA_SZ);       \
                                                                                \
       TEST_NOT_SUCCESS(                                                        \
           storage->interface.write(offset, size, &bytesWritten));              \
@@ -324,7 +329,7 @@ test_storage_neighborRegionsUntouched_pos(
                                                                                \
     {                                                                          \
       size_t bytesRead = (size_t)-1;                                           \
-      memset(storage->port, 0, TEST_DATA_SZ);                                  \
+      memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ);              \
       TEST_NOT_SUCCESS(                                                        \
           storage->interface.read(offset, size, &bytesRead));                  \
                                                                                \

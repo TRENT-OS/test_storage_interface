@@ -16,7 +16,7 @@ int run()
                 .getSize      = ramDisk_rpc_getSize,
                 .getBlockSize = ramDisk_rpc_getBlockSize
             },
-            .port = ramDisk_port
+            .port = OS_DATAPORT_ASSIGN(ramDisk_port)
         },
         // chanMuxStorage
         {
@@ -28,7 +28,7 @@ int run()
                 .getSize      = chanMuxStorage_rpc_getSize,
                 .getBlockSize = chanMuxStorage_rpc_getBlockSize
             },
-            .port = chanMuxStorage_port
+            .port = OS_DATAPORT_ASSIGN(chanMuxStorage_port)
         },
         // storageServer 1
         {
@@ -40,7 +40,7 @@ int run()
                 .getSize      = storageServer1_rpc_getSize,
                 .getBlockSize = storageServer1_rpc_getBlockSize
             },
-            .port = storageServer1_port
+            .port = OS_DATAPORT_ASSIGN(storageServer1_port)
         },
         // storageServer 2
         {
@@ -52,7 +52,7 @@ int run()
                 .getSize      = storageServer2_rpc_getSize,
                 .getBlockSize = storageServer1_rpc_getBlockSize
             },
-            .port = storageServer2_port
+            .port = OS_DATAPORT_ASSIGN(storageServer2_port)
         },
         // storageServer 3
         {
@@ -64,7 +64,7 @@ int run()
                 .getSize      = storageServer3_rpc_getSize,
                 .getBlockSize = storageServer1_rpc_getBlockSize
             },
-            .port = storageServer3_port
+            .port = OS_DATAPORT_ASSIGN(storageServer3_port)
         },
         // sdHostController
         {
@@ -76,7 +76,7 @@ int run()
                 .getSize      = sdhc_rpc_getSize,
                 .getBlockSize = sdhc_rpc_getBlockSize
             },
-            .port = sdhc_port
+            .port = OS_DATAPORT_ASSIGN(sdhc_port)
         }
     };
 
