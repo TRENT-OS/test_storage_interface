@@ -11,6 +11,7 @@
 #pragma once
 
 #include "OS_Error.h"
+#include "OS_Dataport.h"
 #include "stddef.h"
 #include "stdio.h"
 
@@ -46,8 +47,8 @@ typedef struct StorageIf
 
 typedef struct Storage
 {
-    StorageIf_t interface;
-    void*       port;
+    StorageIf_t   interface;
+    OS_Dataport_t port;
 } Storage_t;
 
 void test_storage_size_pos                          (int idx, const Storage_t*);
