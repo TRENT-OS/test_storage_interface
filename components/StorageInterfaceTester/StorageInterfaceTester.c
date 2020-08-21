@@ -82,6 +82,9 @@ int run()
         test_storage_writeReadEraseZeroBytes_pos (idx, &storagesUnderTest[idx]);
         test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
 
+        test_storage_writeReadEraseLargerThanBuf_neg(
+            idx, &storagesUnderTest[idx]);
+
         test_storage_writeReadEraseOutside_neg   (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseNegOffset_neg (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseIntMax_neg    (idx, &storagesUnderTest[idx]);
@@ -90,7 +93,7 @@ int run()
         test_storage_writeReadEraseSizeTooLarge_neg(
             idx, &storagesUnderTest[idx]);
 
-        test_storage_writeReadEraseSizeMax_neg   (idx, &storagesUnderTest[idx]);
+        test_storage_writeReadEraseSizeMax_neg(idx, &storagesUnderTest[idx]);
     }
 
     return 0;

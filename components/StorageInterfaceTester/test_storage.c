@@ -348,6 +348,18 @@ test_storage_neighborRegionsUntouched_pos(
 } while (0)
 
 void
+test_storage_writeReadEraseLargerThanBuf_neg (
+    int idx,
+    Storage_t const * const storage)
+{
+    // Writing more bytes than the dataport size.
+    const size_t dataport_size = OS_Dataport_getSize(
+                                    storage->port) + TEST_DATA_SZ;
+
+    TEST_WRITE_READ_ERASE_NEG(idx, storage, dataport_size, TEST_DATA_SZ);
+}
+
+void
 test_storage_writeReadEraseOutside_neg(
     int idx,
     Storage_t const * const storage)
