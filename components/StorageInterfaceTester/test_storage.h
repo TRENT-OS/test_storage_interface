@@ -61,6 +61,7 @@ void test_storage_writeReadEraseEnd_pos             (int idx, const Storage_t*);
 void test_storage_writeReadEraseZeroBytes_pos       (int idx, const Storage_t*);
 void test_storage_neighborRegionsUntouched_pos      (int idx, const Storage_t*);
 
+void test_storage_writeReadEraseLargerThanBuf_neg   (int idx, const Storage_t*);
 void test_storage_writeReadEraseOutside_neg         (int idx, const Storage_t*);
 void test_storage_writeReadEraseNegOffset_neg       (int idx, const Storage_t*);
 void test_storage_writeReadEraseIntMax_neg          (int idx, const Storage_t*);
@@ -68,3 +69,4 @@ void test_storage_writeReadEraseIntMin_neg          (int idx, const Storage_t*);
 
 void test_storage_writeReadEraseSizeTooLarge_neg    (int idx, const Storage_t*);
 void test_storage_writeReadEraseSizeMax_neg         (int idx, const Storage_t*);
+
