@@ -83,6 +83,5 @@ assembly {
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
         ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
-        ramDisk.storage_size_bytes = 2048;
     }
 }
