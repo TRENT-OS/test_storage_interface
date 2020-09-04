@@ -148,6 +148,26 @@ void test_storage_blockSize_pos(int idx, Storage_t const * const storage)
 }
 
 void
+test_storage_state_pos(
+    int idx,
+    Storage_t const * const storage)
+{
+    TEST_START(idx);
+
+    // Since state is implementation specific we call it and log it, but do not
+    // evaluate the result. We are only expecting no crash.
+    uint32_t flags;
+    const OS_Error_t rslt = storage->interface.getState(&flags);
+
+    Debug_LOG_INFO(
+        "Called storage->interface.getState(&flags). flags = %u, rslt = %i",
+        flags,
+        rslt);
+
+    TEST_FINISH();
+}
+
+void
 test_storage_writeReadEraseBegin_pos(
     int idx,
     Storage_t const * const storage)
