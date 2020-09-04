@@ -14,7 +14,8 @@ int run()
                 .read         = ramDisk_rpc_read,
                 .erase        = ramDisk_rpc_erase,
                 .getSize      = ramDisk_rpc_getSize,
-                .getBlockSize = ramDisk_rpc_getBlockSize
+                .getBlockSize = ramDisk_rpc_getBlockSize,
+                .getState     = ramDisk_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(ramDisk_port)
         },
@@ -26,7 +27,8 @@ int run()
                 .read         = chanMuxStorage_rpc_read,
                 .erase        = chanMuxStorage_rpc_erase,
                 .getSize      = chanMuxStorage_rpc_getSize,
-                .getBlockSize = chanMuxStorage_rpc_getBlockSize
+                .getBlockSize = chanMuxStorage_rpc_getBlockSize,
+                .getState     = chanMuxStorage_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(chanMuxStorage_port)
         },
@@ -38,7 +40,8 @@ int run()
                 .read         = storageServer1_rpc_read,
                 .erase        = storageServer1_rpc_erase,
                 .getSize      = storageServer1_rpc_getSize,
-                .getBlockSize = storageServer1_rpc_getBlockSize
+                .getBlockSize = storageServer1_rpc_getBlockSize,
+                .getState     = storageServer1_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(storageServer1_port)
         },
@@ -50,7 +53,8 @@ int run()
                 .read         = storageServer2_rpc_read,
                 .erase        = storageServer2_rpc_erase,
                 .getSize      = storageServer2_rpc_getSize,
-                .getBlockSize = storageServer1_rpc_getBlockSize
+                .getBlockSize = storageServer2_rpc_getBlockSize,
+                .getState     = storageServer2_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(storageServer2_port)
         },
@@ -62,7 +66,8 @@ int run()
                 .read         = storageServer3_rpc_read,
                 .erase        = storageServer3_rpc_erase,
                 .getSize      = storageServer3_rpc_getSize,
-                .getBlockSize = storageServer1_rpc_getBlockSize
+                .getBlockSize = storageServer3_rpc_getBlockSize,
+                .getState     = storageServer3_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(storageServer3_port)
         },
@@ -74,7 +79,8 @@ int run()
                 .read         = sdhc_rpc_read,
                 .erase        = sdhc_rpc_erase,
                 .getSize      = sdhc_rpc_getSize,
-                .getBlockSize = sdhc_rpc_getBlockSize
+                .getBlockSize = sdhc_rpc_getBlockSize,
+                .getState     = sdhc_rpc_getState
             },
             .port = OS_DATAPORT_ASSIGN(sdhc_port)
         }
@@ -87,6 +93,7 @@ int run()
     {
         test_storage_size_pos                    (idx, &storagesUnderTest[idx]);
         test_storage_blockSize_pos               (idx, &storagesUnderTest[idx]);
+        test_storage_state_pos                   (idx, &storagesUnderTest[idx]);
 
         test_storage_writeReadEraseBegin_pos     (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseMid_pos       (idx, &storagesUnderTest[idx]);
