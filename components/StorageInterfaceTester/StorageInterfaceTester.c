@@ -1,5 +1,7 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 #include "test_storage.h"
+#include "LibDebug/Debug.h"
+
 #include <camkes.h>
 
 int run()
@@ -101,6 +103,8 @@ int run()
 
         test_storage_writeReadEraseSizeMax_neg(idx, &storagesUnderTest[idx]);
     }
+
+    Debug_LOG_INFO("All tests successfully completed.");
 
     return 0;
 }
