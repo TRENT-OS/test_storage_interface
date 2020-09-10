@@ -54,6 +54,13 @@ roundDownToBLockSize(
 { \
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesWritten = 0U; \
+\
+    Debug_LOG_DEBUG( \
+        "TEST_WRITE(" \
+        "storage = %p, offset = %" PRIiMAX ", data = %p, size = %zu, " \
+        "roundedDownSize = %zu)",  \
+        storage, offset, data, size, roundedDownSize); \
+\
     memcpy(OS_Dataport_getBuf(storage->port), data, roundedDownSize); \
     TEST_SUCCESS( \
         storage->interface.write( \
@@ -67,6 +74,13 @@ roundDownToBLockSize(
 { \
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesRead = 0U; \
+\
+    Debug_LOG_DEBUG( \
+        "TEST_READ(" \
+        "storage = %p, offset = %" PRIiMAX ", expectedData = %p, size = %zu, " \
+        "roundedDownSize = %zu)",  \
+        storage, offset, expectedData, size, roundedDownSize); \
+\
     memset(OS_Dataport_getBuf(storage->port), 0, roundedDownSize); \
     TEST_SUCCESS( \
         storage->interface.read( \
@@ -86,6 +100,12 @@ roundDownToBLockSize(
 #define TEST_ERASE(storage, offset, size) do \
 { \
     off_t bytesErased = -1; \
+\
+    Debug_LOG_DEBUG( \
+        "TEST_ERASE(" \
+        "storage = %p, offset = %" PRIiMAX ", size = %zu, ", \
+        storage, offset, size); \
+\
     TEST_SUCCESS( \
         storage->interface.erase( \
             roundDownToBLockSize(storage, offset), \
