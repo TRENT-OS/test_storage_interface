@@ -94,8 +94,8 @@ int run()
         test_storage_writeReadEraseZeroBytes_pos (idx, &storagesUnderTest[idx]);
         test_storage_neighborRegionsUntouched_pos(idx, &storagesUnderTest[idx]);
 
-        test_storage_writeReadEraseLargerThanBuf_neg(
-            idx, &storagesUnderTest[idx]);
+        // test_storage_writeReadEraseLargerThanBuf_neg(
+        //     idx, &storagesUnderTest[idx]);
 
         test_storage_writeReadEraseOutside_neg   (idx, &storagesUnderTest[idx]);
         test_storage_writeReadEraseNegOffset_neg (idx, &storagesUnderTest[idx]);
