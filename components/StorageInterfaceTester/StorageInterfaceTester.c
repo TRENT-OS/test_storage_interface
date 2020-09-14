@@ -84,7 +84,7 @@ int run()
         test_storage_writeReadEraseSizeTooLarge_neg(
             idx, &storagesUnderTest[idx]);
 
-        test_storage_writeReadEraseSizeMax_neg(idx, &storagesUnderTest[idx]);
+        test_storage_writeReadEraseSizeMax_neg   (idx, &storagesUnderTest[idx]);
     }
 
     return 0;
