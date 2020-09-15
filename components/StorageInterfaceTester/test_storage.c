@@ -358,6 +358,12 @@ test_storage_neighborRegionsUntouched_pos(
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesWritten = (size_t)-1; \
 \
+    Debug_LOG_DEBUG( \
+        "TEST_WRITE_NEG(" \
+        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
+        "roundedDownSize = %zu)",  \
+        storage, offset, size, roundedDownSize); \
+\
     memcpy(OS_Dataport_getBuf(storage->port), testData, TEST_DATA_SZ); \
 \
     TEST_NOT_SUCCESS( \
@@ -371,6 +377,12 @@ test_storage_neighborRegionsUntouched_pos(
     const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
     size_t bytesRead = (size_t)-1; \
 \
+    Debug_LOG_DEBUG( \
+        "TEST_READ_NEG(" \
+        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
+        "roundedDownSize = %zu)",  \
+        storage, offset, size, roundedDownSize); \
+\
     memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ); \
     TEST_NOT_SUCCESS( \
         storage->interface.read(offset, roundedDownSize, &bytesRead)); \
@@ -381,6 +393,11 @@ test_storage_neighborRegionsUntouched_pos(
 #define TEST_ERASE_NEG(storage, offset, size) do \
 { \
     off_t bytesErased = -1; \
+\
+    Debug_LOG_DEBUG( \
+        "TEST_ERASE_NEG(" \
+        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")", \
+        storage, offset, size); \
 \
     TEST_NOT_SUCCESS( \
         storage->interface.erase( \
