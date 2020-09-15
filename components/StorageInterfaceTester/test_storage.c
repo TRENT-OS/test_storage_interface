@@ -393,10 +393,10 @@ test_storage_writeReadEraseLargerThanBuf_neg (
     Storage_t const * const storage)
 {
     // Writing more bytes than the dataport size.
-    const size_t dataport_size = OS_Dataport_getSize(
+    const off_t dataport_size = OS_Dataport_getSize(
                                     storage->port) + TEST_DATA_SZ;
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, dataport_size, TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(idx, storage, dataport_size, (off_t)TEST_DATA_SZ);
 }
 
 void
@@ -407,7 +407,7 @@ test_storage_writeReadEraseOutside_neg(
     off_t storageSize = 0U;
     TEST_SUCCESS(storage->interface.getSize(&storageSize));
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageSize, TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageSize, (off_t)TEST_DATA_SZ);
 }
 
 void
@@ -415,7 +415,7 @@ test_storage_writeReadEraseNegOffset_neg(
     int idx,
     Storage_t const * const storage)
 {
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, -1, TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(idx, storage, (off_t)-1, (off_t)TEST_DATA_SZ);
 }
 
 void
@@ -423,7 +423,11 @@ test_storage_writeReadEraseIntMax_neg(
     int idx,
     Storage_t const * const storage)
 {
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, INTMAX_MAX, TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(
+        idx,
+        storage,
+        (off_t)INTMAX_MAX,
+        (off_t)TEST_DATA_SZ);
 }
 
 void
@@ -431,7 +435,11 @@ test_storage_writeReadEraseIntMin_neg(
     int idx,
     Storage_t const * const storage)
 {
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, INTMAX_MIN, TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(
+        idx,
+        storage,
+        (off_t)INTMAX_MIN,
+        (off_t)TEST_DATA_SZ);
 }
 
 void
@@ -444,7 +452,11 @@ test_storage_writeReadEraseSizeTooLarge_neg(
 
     ++storageSize; // Writing more bytes than the storage size.
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, storageSize);
+    TEST_WRITE_READ_ERASE_NEG(
+        idx,
+        storage,
+        storageBeginOffset,
+        storageSize);
 }
 
 void
@@ -457,7 +469,11 @@ test_storage_writeReadEraseSizeMax_neg(
 
     ++storageSize; // Writing more bytes than the storage size.
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageBeginOffset, SIZE_MAX);
+    TEST_WRITE_READ_ERASE_NEG(
+        idx,
+        storage,
+        storageBeginOffset,
+        (off_t)SIZE_MAX);
 }
 
 off_t
