@@ -430,7 +430,11 @@ test_storage_writeReadEraseNegOffset_neg(
     int idx,
     Storage_t const * const storage)
 {
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, (off_t)-1, (off_t)TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(
+        idx,
+        storage,
+        (off_t)(0 - TEST_DATA_SZ),
+        (off_t)TEST_DATA_SZ);
 }
 
 void
