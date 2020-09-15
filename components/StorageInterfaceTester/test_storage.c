@@ -353,38 +353,48 @@ test_storage_neighborRegionsUntouched_pos(
     free(untouchedBack);
 }
 
-#define TEST_WRITE_READ_ERASE_NEG(idx, storage, offset, size) do               \
-{                                                                              \
-    TEST_START(idx);                                                           \
-                                                                               \
-    {                                                                          \
-      size_t bytesWritten = (size_t)-1;                                        \
-      memcpy(OS_Dataport_getBuf(storage->port), testData, TEST_DATA_SZ);       \
-                                                                               \
-      TEST_NOT_SUCCESS(                                                        \
-          storage->interface.write(offset, size, &bytesWritten));              \
-                                                                               \
-      ASSERT_EQ_SZ(0U, bytesWritten);                                          \
-    }                                                                          \
-                                                                               \
-    {                                                                          \
-      size_t bytesRead = (size_t)-1;                                           \
-      memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ);              \
-      TEST_NOT_SUCCESS(                                                        \
-          storage->interface.read(offset, size, &bytesRead));                  \
-                                                                               \
-      ASSERT_EQ_SZ(0U, bytesRead);                                             \
-    }                                                                          \
-                                                                               \
-    {                                                                          \
-      off_t bytesErased = -1;                                                  \
-      TEST_NOT_SUCCESS(                                                        \
-          storage->interface.erase(offset, size, &bytesErased));               \
-                                                                               \
-      ASSERT_EQ_INT_MAX(0LL, bytesErased);                                     \
-    }                                                                          \
-                                                                               \
-    TEST_FINISH();                                                             \
+#define TEST_WRITE_NEG(storage, offset, size) do \
+{ \
+    size_t bytesWritten = (size_t)-1; \
+\
+    memcpy(OS_Dataport_getBuf(storage->port), testData, TEST_DATA_SZ); \
+\
+    TEST_NOT_SUCCESS( \
+          storage->interface.write(offset, size, &bytesWritten)); \
+\
+    ASSERT_EQ_SZ(0U, bytesWritten); \
+} while (0)
+
+#define TEST_READ_NEG(storage, offset, size) do \
+{ \
+    size_t bytesRead = (size_t)-1; \
+\
+    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ); \
+    TEST_NOT_SUCCESS( \
+          storage->interface.read(offset, size, &bytesRead)); \
+\
+    ASSERT_EQ_SZ(0U, bytesRead); \
+} while (0)
+
+#define TEST_ERASE_NEG(storage, offset, size) do \
+{ \
+    off_t bytesErased = -1; \
+\
+    TEST_NOT_SUCCESS( \
+          storage->interface.erase(offset, size, &bytesErased)); \
+\
+    ASSERT_EQ_INT_MAX(0LL, bytesErased); \
+} while (0)
+
+#define TEST_WRITE_READ_ERASE_NEG(idx, storage, offset, size) do \
+{ \
+    TEST_START(idx); \
+\
+    TEST_WRITE_NEG(storage, offset, size); \
+    TEST_READ_NEG (storage, offset, size); \
+    TEST_ERASE_NEG(storage, offset, size); \
+\
+    TEST_FINISH(); \
 } while (0)
 
 void
