@@ -48,6 +48,12 @@
 //-----------------------------------------------------------------------------
 // StorageServer clients
 //-----------------------------------------------------------------------------
+/**
+ * @brief   The storage size available for each of the storage server clients.
+ *
+ * @note    Must be three times larger than the test data array used in this
+ *          test system.
+ */
 #define STORAGE_SERVER_CLIENT_SZ 4096
 
 #define STORAGESERVER_TESTER_IF1_ID 1
@@ -57,4 +63,10 @@
 //-----------------------------------------------------------------------------
 // RamDisk
 //-----------------------------------------------------------------------------
+/**
+ * @brief   Size of the RAM Disks used in this test system
+ *
+ * @note    Must be large enough to hold data for all of the storage server
+ *          clients.
+ */
 #define RAMDISK_SIZE_BYTES (3 * STORAGE_SERVER_CLIENT_SZ)
