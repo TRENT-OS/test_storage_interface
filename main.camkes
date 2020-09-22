@@ -7,20 +7,20 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 #include "system_config.h"
 
 
-#include "UART/Uart.camkes"
-DECLARE_COMPONENT_UART(UART)
-
-#include "ChanMux/ChanMux.camkes"
-ChanMux_DEFINE_COMPONENT(ChanMux,
-        chanMuxStorage, chan)
-
-#include "ChanMux_Storage/ChanMux_Storage.camkes"
-
-#include "RamDisk/RamDisk.camkes"
-DECLARE_COMPONENT_RamDisk(RamDisk)
-
-#include "StorageServer/camkes/StorageServer.camkes"
-DECLARE_COMPONENT_StorageServer(StorageServer)
+// #include "UART/Uart.camkes"
+// DECLARE_COMPONENT_UART(UART)
+//
+// #include "ChanMux/ChanMux.camkes"
+// ChanMux_DEFINE_COMPONENT(ChanMux,
+        // chanMuxStorage, chan)
+//
+// #include "ChanMux_Storage/ChanMux_Storage.camkes"
+//
+// #include "RamDisk/RamDisk.camkes"
+// DECLARE_COMPONENT_RamDisk(RamDisk)
+//
+// #include "StorageServer/camkes/StorageServer.camkes"
+// DECLARE_COMPONENT_StorageServer(StorageServer)
 
 #include "SdHostController/SdHostController.camkes"
 DECLARE_COMPONENT_SDHC(Sdhc);
@@ -29,40 +29,40 @@ assembly {
     composition {
 
         // UART
-        DECLARE_AND_CONNECT_INSTANCE_UART(
-            UART, uartDrv)
+        // DECLARE_AND_CONNECT_INSTANCE_UART(
+        //     UART, uartDrv)
 
         // ChanMux
-        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux, uartDrv)
+        // ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux, uartDrv)
 
         // ChanMux_Storage
-        component   ChanMux_Storage chanMuxStorage;
+        // component   ChanMux_Storage chanMuxStorage;
 
-        ChanMux_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
-        ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
+        // ChanMux_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
+        // ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
 
         // RamDisk
-        component   RamDisk             ramDisk;
+        // component   RamDisk             ramDisk;
 
         // ChanMux_Storage_tester
         component   StorageInterfaceTester tester;
 
 
-        connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMuxStorage.storage_rpc);
-        connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMuxStorage.storage_port);
+        // connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMuxStorage.storage_rpc);
+        // connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMuxStorage.storage_port);
 
-        connection  seL4RPCCall         tester_ramDisk             (from tester.ramDisk_rpc,         to ramDisk.storage_rpc);
-        connection  seL4SharedData      tester_ramDisk_port        (from tester.ramDisk_port,        to ramDisk.storage_port);
+        // connection  seL4RPCCall         tester_ramDisk             (from tester.ramDisk_rpc,         to ramDisk.storage_rpc);
+        // connection  seL4SharedData      tester_ramDisk_port        (from tester.ramDisk_port,        to ramDisk.storage_port);
 
         // Storage Server
-        component   RamDisk             storageServerStorage;
+        // component   RamDisk             storageServerStorage;
 
-        DECLARE_AND_CONNECT_INSTANCE_StorageServer(
-            StorageServer, storageServer,
-            storageServerStorage.storage_rpc, storageServerStorage.storage_port,
-            tester.storageServer1_rpc, tester.storageServer1_port,
-            tester.storageServer2_rpc, tester.storageServer2_port,
-            tester.storageServer3_rpc, tester.storageServer3_port)
+        //DECLARE_AND_CONNECT_INSTANCE_StorageServer(
+        //    StorageServer, storageServer,
+        //    storageServerStorage.storage_rpc, storageServerStorage.storage_port,
+        //    tester.storageServer1_rpc, tester.storageServer1_port,
+        //    tester.storageServer2_rpc, tester.storageServer2_port,
+        //    tester.storageServer3_rpc, tester.storageServer3_port)
 
         // SDHC
         DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
@@ -73,28 +73,28 @@ assembly {
     }
 
     configuration {
-        CONFIGURE_INSTANCE_UART(
-            uartDrv,
-            CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
-            CFG_CHANMUX_DEFAULT_UART_INTR)
+        //CONFIGURE_INSTANCE_UART(
+        //    uartDrv,
+        //    CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
+        //    CFG_CHANMUX_DEFAULT_UART_INTR)
 
-        CONFIGURE_INSTANCE_StorageServer(
-            storageServer,
-            (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
+        //CONFIGURE_INSTANCE_StorageServer(
+        //    storageServer,
+        //    (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
+        //    (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
+        //    (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
 
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer1_rpc, STORAGESERVER_TESTER_IF1_ID)
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer2_rpc, STORAGESERVER_TESTER_IF2_ID)
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
+        //ASSIGN_CLIENT_BADGE_StorageServer(
+        //    tester, storageServer1_rpc, STORAGESERVER_TESTER_IF1_ID)
+        //ASSIGN_CLIENT_BADGE_StorageServer(
+        //    tester, storageServer2_rpc, STORAGESERVER_TESTER_IF2_ID)
+        //ASSIGN_CLIENT_BADGE_StorageServer(
+        //    tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
 
         CONFIGURE_INSTANCE_SDHC(sdhc, 4)
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
-        ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
+        //ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
     }
 }

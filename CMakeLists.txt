@@ -28,28 +28,28 @@ DeclareCAmkESComponent(
         os_libs
 )
 
-DeclareCAmkESComponent_UART(
-    UART
-)
+#DeclareCAmkESComponent_UART(
+#    UART
+#)
+#
+#DeclareCAmkESComponent_ChanMux(
+#    ChanMux
+#    components/ChanMux/ChanMux_config.c
+#    system_config
+#)
+#
+#DeclareCAmkESComponent_ChanMux_Storage(
+#    ChanMux_Storage
+#)
+#
+#DeclareCAmkESComponent_RamDisk(
+#    RamDisk
+#    system_config
+#)
 
-DeclareCAmkESComponent_ChanMux(
-    ChanMux
-    components/ChanMux/ChanMux_config.c
-    system_config
-)
-
-DeclareCAmkESComponent_ChanMux_Storage(
-    ChanMux_Storage
-)
-
-DeclareCAmkESComponent_RamDisk(
-    RamDisk
-    system_config
-)
-
-DeclareCAmkESComponent_StorageServer(
-    StorageServer
-)
+#DeclareCAmkESComponent_StorageServer(
+#    StorageServer
+#)
 
 DeclareCAmkESComponent_SdHostController(
     Sdhc
