@@ -106,6 +106,22 @@ roundDownToBLockSize(
         "storage = %p, offset = %" PRIiMAX ", size = %zu, ", \
         storage, offset, size); \
 \
+    const OS_Error_t rslt = storage->interface.erase( \
+                                roundDownToBLockSize(storage, offset), \
+                                roundDownToBLockSize(storage, size), \
+                                &bytesErased); \
+\
+    if(OS_ERROR_NOT_IMPLEMENTED == rslt) \
+    { \
+        /* Erase functionality is considered optional. */ \
+        ASSERT_EQ_INT_MAX(0LL, bytesErased); \
+\
+        Debug_LOG_WARNING( \
+            "Erase function is not implemented. Was it intended?"); \
+\
+        break; \
+    }\
+\
     TEST_SUCCESS( \
         storage->interface.erase( \
             roundDownToBLockSize(storage, offset), \
@@ -234,7 +250,19 @@ test_storage_writeReadEraseZeroBytes_pos(
     TEST_READ (storage, testOffset, testData, 0U);
 
     off_t bytesErased = -1;
-    TEST_SUCCESS(storage->interface.erase(testOffset, 0U, &bytesErased));
+
+    const OS_Error_t rslt = storage->interface.erase(
+                                testOffset,
+                                0U,
+                                &bytesErased);
+
+    // Erase implementation is considered optional but still function must
+    // return zero bytes erased.
+    if(OS_ERROR_NOT_IMPLEMENTED != rslt)
+    {
+        TEST_SUCCESS(rslt);
+    }
+
     ASSERT_EQ_INT_MAX(0LL, bytesErased);
 
     TEST_FINISH();
