@@ -91,7 +91,7 @@ assembly {
         //ASSIGN_CLIENT_BADGE_StorageServer(
         //    tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
 
-        CONFIGURE_INSTANCE_SDHC(sdhc, 4)
+        CONFIGURE_INSTANCE_SDHC(sdhc, 2)
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
