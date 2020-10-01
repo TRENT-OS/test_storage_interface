@@ -1,0 +1,21 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+/**
+ * @file
+ * @brief   IOMUX hardware component
+ */
+
+
+//------------------------------------------------------------------------------
+// Component
+
+component Iomux_hw {
+    hardware;
+
+    dataport  Buf   regBase;
+}
+
+component Iomux {
+    control;
+    dataport  Buf   regBase;
+}

@@ -28,6 +28,18 @@ DeclareCAmkESComponent(
         os_libs
 )
 
+DeclareCAmkESComponent(
+    Iomux
+    SOURCES
+        components/Iomux/Iomux.c
+    C_FLAGS
+        -Wall -Werror
+    LIBS
+        system_config
+        os_core_api
+        os_libs
+)
+
 #DeclareCAmkESComponent_UART(
 #    UART
 #)

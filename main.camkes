@@ -3,6 +3,7 @@
 import <std_connector.camkes>;
 
 import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
+import "components/Iomux/Iomux.camkes";
 
 #include "system_config.h"
 
@@ -47,6 +48,10 @@ assembly {
         // ChanMux_Storage_tester
         component   StorageInterfaceTester tester;
 
+        component Iomux_hw iomux_hw;
+        component Iomux iomux;
+
+        connection  seL4HardwareMMIO      iomux_port(from iomux.regBase, to iomux_hw.regBase);
 
         // connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMuxStorage.storage_rpc);
         // connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMuxStorage.storage_port);
@@ -90,6 +95,9 @@ assembly {
         //    tester, storageServer2_rpc, STORAGESERVER_TESTER_IF2_ID)
         //ASSIGN_CLIENT_BADGE_StorageServer(
         //    tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
+
+        iomux_hw.regBase_paddr  = 0x020E0000;
+        iomux_hw.regBase_size   = 0x1000;
 
         CONFIGURE_INSTANCE_SDHC(sdhc, 2)
 
