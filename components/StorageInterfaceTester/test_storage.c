@@ -519,3 +519,18 @@ roundDownToBLockSize(
 
     return adjustedValue;
 }
+
+void
+test_storage_apiWithMediumNotPresent()
+{
+    size_t  dummySize   = 0;
+    off_t   dummyOffset = 0;
+
+    TEST_START();
+    TEST_DEVICE_NOT_PRESENT(storage_rpc_write(0, 1, &dummySize));
+    TEST_DEVICE_NOT_PRESENT(storage_rpc_read(0, 1, &dummySize));
+    TEST_NOT_IMPLEMENTED(storage_rpc_erase(0, 1, &dummyOffset));
+    TEST_DEVICE_NOT_PRESENT(storage_rpc_getSize(&dummyOffset));
+    TEST_DEVICE_NOT_PRESENT(storage_rpc_getBlockSize(&dummySize));
+    TEST_FINISH()
+}

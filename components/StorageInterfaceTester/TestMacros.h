@@ -144,6 +144,8 @@ static char testName[MAX_MSG_LEN] = "<undefined>";
  */
 
 // These shorthands can be used to simply check function return codes
+#define TEST_NOT_IMPLEMENTED(fn)  ASSERT_EQ_INT(OS_ERROR_NOT_IMPLEMENTED, fn)
+#define TEST_DEVICE_NOT_PRESENT(fn) ASSERT_EQ_INT(OS_ERROR_DEVICE_NOT_PRESENT, fn)
 #define TEST_INSUFF_SPACE(fn)     ASSERT_EQ_INT(OS_ERROR_INSUFFICIENT_SPACE, fn)
 #define TEST_TOO_SMALL(fn)        ASSERT_EQ_INT(OS_ERROR_BUFFER_TOO_SMALL,   fn)
 #define TEST_ABORTED(fn)          ASSERT_EQ_INT(OS_ERROR_ABORTED,            fn)
@@ -157,6 +159,8 @@ static char testName[MAX_MSG_LEN] = "<undefined>";
 #define TEST_GENERIC(fn)          ASSERT_EQ_INT(OS_ERROR_GENERIC,            fn)
 #define TEST_SUCCESS(fn)          ASSERT_EQ_INT(OS_SUCCESS,                  fn)
 
+#define TEST_NOT_NOT_IMPLEMENTED(fn) ASSERT_NE_INT(OS_ERROR_NOT_IMPLEMENTED, fn)
+#define TEST_NOT_DEVICE_NOT_PRESENT(fn) ASSERT_NE_INT(OS_ERROR_DEVICE_NOT_PRESENT, fn)
 #define TEST_NOT_INSUFF_SPACE(fn) ASSERT_NE_INT(OS_ERROR_INSUFFICIENT_SPACE, fn)
 #define TEST_NOT_TOO_SMALL(fn)    ASSERT_NE_INT(OS_ERROR_BUFFER_TOO_SMALL,   fn)
 #define TEST_NOT_ABORTED(fn)      ASSERT_NE_INT(OS_ERROR_ABORTED,            fn)
