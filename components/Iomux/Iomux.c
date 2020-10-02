@@ -14,6 +14,8 @@
 #include <camkes/io.h>
 
 #include <platsupport/io.h>
+#include <platsupport/mux.h>
+#include <platsupport/plat/mux.h>
 
 //------------------------------------------------------------------------------
 ps_io_ops_t      io_ops_ref;
@@ -41,6 +43,14 @@ post_init(void)
     printf("io_ops->mux_sys: %p\n", &io_ops_ref.mux_sys);
 
     Debug_LOG_DEBUG("IOMUX successfully initialized.");
+
+    /* Configure MUX */
+    rslt = mux_feature_enable(&io_ops_ref.mux_sys, 5, MUX_DIR_NOT_A_GPIO);
+    if (rslt) {
+        assert(!"Failed to configure SD IO mux");
+    }
+
+    Debug_LOG_DEBUG("IOMUX features successfully enabled.");
 }
 
 int run() {
