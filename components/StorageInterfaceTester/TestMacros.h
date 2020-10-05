@@ -9,6 +9,7 @@
 #include <string.h>
 #include <assert.h>
 #include <inttypes.h>
+#include <camkes.h>
 
 #define MAX_MSG_LEN 512
 
@@ -40,9 +41,9 @@ static char testName[MAX_MSG_LEN] = "<undefined>";
 // This outputs the tests name as a marker that it has been completed. Also, we
 // reset the testName to make incorrect use of TEST_START/TEST_FINISH more easy
 // to spot.
-#define TEST_FINISH() {                                     \
-    Debug_LOG_INFO("!!! %s: OK", testName);                 \
-    snprintf(testName, sizeof(testName), "<undefined>");    \
+#define TEST_FINISH() { \
+    Debug_LOG_INFO("%s -> !!! %s: OK", get_instance_name(), testName); \
+    snprintf(testName, sizeof(testName), "<undefined>"); \
 }
 
 #define ASSERT_COMPARE(expected, actual, varFormat, operator) do \

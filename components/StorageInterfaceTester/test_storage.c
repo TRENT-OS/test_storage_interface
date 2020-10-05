@@ -42,7 +42,6 @@ static const char testData[] =
 static
 off_t
 roundDownToBLockSize(
-    Storage_t const * const storage,
     off_t value);
 
 #define TEST_DATA_SZ (sizeof(testData) / sizeof(*testData))
@@ -50,65 +49,65 @@ roundDownToBLockSize(
 
 // Helper functions wrapped in macros so that we get the proper line number in
 // a case of the failure.
-#define TEST_WRITE(storage, offset, data, size) do \
+#define TEST_WRITE(offset, data, size) do \
 { \
-    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
+    const size_t roundedDownSize = roundDownToBLockSize(size); \
     size_t bytesWritten = 0U; \
 \
     Debug_LOG_DEBUG( \
         "TEST_WRITE(" \
-        "storage = %p, offset = %" PRIiMAX ", data = %p, size = %zu, " \
+        "offset = %" PRIiMAX ", data = %p, size = %zu, " \
         "roundedDownSize = %zu)",  \
-        storage, offset, data, size, roundedDownSize); \
+        offset, data, size, roundedDownSize); \
 \
-    memcpy(OS_Dataport_getBuf(storage->port), data, roundedDownSize); \
+    memcpy(storage_port, data, roundedDownSize); \
     TEST_SUCCESS( \
-        storage->interface.write( \
-            roundDownToBLockSize(storage, offset), \
+        storage_rpc_write( \
+            roundDownToBLockSize(offset), \
             roundedDownSize, \
             &bytesWritten)); \
     ASSERT_EQ_SZ(roundedDownSize, bytesWritten); \
 } while(0)
 
-#define TEST_READ(storage, offset, expectedData, size) do \
+#define TEST_READ(offset, expectedData, size) do \
 { \
-    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
+    const size_t roundedDownSize = roundDownToBLockSize(size); \
     size_t bytesRead = 0U; \
 \
     Debug_LOG_DEBUG( \
         "TEST_READ(" \
-        "storage = %p, offset = %" PRIiMAX ", expectedData = %p, size = %zu, " \
+        "offset = %" PRIiMAX ", expectedData = %p, size = %zu, " \
         "roundedDownSize = %zu)",  \
-        storage, offset, expectedData, size, roundedDownSize); \
+        offset, expectedData, size, roundedDownSize); \
 \
-    memset(OS_Dataport_getBuf(storage->port), 0, roundedDownSize); \
+    memset(storage_port, 0, roundedDownSize); \
     TEST_SUCCESS( \
-        storage->interface.read( \
-            roundDownToBLockSize(storage, offset), \
+        storage_rpc_read( \
+            roundDownToBLockSize(offset), \
             roundedDownSize, \
             &bytesRead)); \
 \
     ASSERT_EQ_SZ(roundedDownSize, bytesRead); \
     ASSERT_EQ_INT( \
         0, \
-        memcmp(OS_Dataport_getBuf(storage->port), \
+        memcmp(storage_port, \
             expectedData, \
             roundedDownSize)); \
 \
 } while(0)
 
-#define TEST_ERASE(storage, offset, size) do \
+#define TEST_ERASE(offset, size) do \
 { \
     off_t bytesErased = -1; \
 \
     Debug_LOG_DEBUG( \
         "TEST_ERASE(" \
-        "storage = %p, offset = %" PRIiMAX ", size = %zu, ", \
-        storage, offset, size); \
+        "offset = %" PRIiMAX ", size = %zu, ", \
+        offset, size); \
 \
-    const OS_Error_t rslt = storage->interface.erase( \
-                                roundDownToBLockSize(storage, offset), \
-                                roundDownToBLockSize(storage, size), \
+    const OS_Error_t rslt = storage_rpc_erase( \
+                                roundDownToBLockSize(offset), \
+                                roundDownToBLockSize(size), \
                                 &bytesErased); \
 \
     if(OS_ERROR_NOT_IMPLEMENTED == rslt) \
@@ -123,41 +122,42 @@ roundDownToBLockSize(
     }\
 \
     TEST_SUCCESS( \
-        storage->interface.erase( \
-            roundDownToBLockSize(storage, offset), \
-            roundDownToBLockSize(storage, size), \
+        storage_rpc_erase( \
+            roundDownToBLockSize(offset), \
+            roundDownToBLockSize(size), \
             &bytesErased)); \
 \
     ASSERT_EQ_INT_MAX( \
-        (off_t)roundDownToBLockSize(storage, size), \
+        (off_t)roundDownToBLockSize(size), \
         bytesErased); \
 \
     uint8_t* expectedEraseData = malloc(size); \
     memset(expectedEraseData, ERASED_PATTERN, size); \
 \
-    TEST_READ(storage, offset, expectedEraseData, size); \
+    TEST_READ(offset, expectedEraseData, size); \
     free(expectedEraseData); \
 } while(0)
 
-#define TEST_WRITE_READ_ERASE(idx, storage, offset) do \
+#define TEST_WRITE_READ_ERASE(offset) do \
 { \
-    TEST_START(idx); \
+    TEST_START(); \
 \
-    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ); \
+    memset(storage_port, 0, TEST_DATA_SZ); \
 \
-    TEST_WRITE(storage, offset, testData, TEST_DATA_SZ); \
-    TEST_READ (storage, offset, testData, TEST_DATA_SZ); \
-    TEST_ERASE(storage, offset, TEST_DATA_SZ); \
+    TEST_WRITE(offset, testData, TEST_DATA_SZ); \
+    TEST_READ (offset, testData, TEST_DATA_SZ); \
+    TEST_ERASE(offset, TEST_DATA_SZ); \
 \
     TEST_FINISH(); \
 } while (0)
 
-void test_storage_size_pos(int idx, Storage_t const * const storage)
+void
+test_storage_size_pos()
 {
-    TEST_START(idx);
+    TEST_START();
 
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
     Debug_LOG_DEBUG("Storage under test's size is: %" PRIiMAX, storageSize);
 
@@ -169,12 +169,13 @@ void test_storage_size_pos(int idx, Storage_t const * const storage)
     TEST_FINISH();
 }
 
-void test_storage_blockSize_pos(int idx, Storage_t const * const storage)
+void
+test_storage_blockSize_pos()
 {
-    TEST_START(idx);
+    TEST_START();
 
     size_t storageBlockSize = 0U;
-    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+    TEST_SUCCESS(storage_rpc_getBlockSize(&storageBlockSize));
 
     // Different storages have different block sizes, but nevertheless the block
     // size must always be greater than 0.
@@ -184,19 +185,18 @@ void test_storage_blockSize_pos(int idx, Storage_t const * const storage)
 }
 
 void
-test_storage_state_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_state_pos()
 {
-    TEST_START(idx);
+    TEST_START();
 
     // Since state is implementation specific we call it and log it, but do not
     // evaluate the result. We are only expecting no crash.
     uint32_t flags;
-    const OS_Error_t rslt = storage->interface.getState(&flags);
+    const OS_Error_t rslt = storage_rpc_getState(&flags);
 
-    Debug_LOG_INFO(
-        "Called storage->interface.getState(&flags). flags = %u, rslt = %i",
+    (void)rslt;
+    Debug_LOG_DEBUG(
+        "Called storage_rpc_getState(&flags). flags = %u, rslt = %i",
         flags,
         rslt);
 
@@ -204,54 +204,46 @@ test_storage_state_pos(
 }
 
 void
-test_storage_writeReadEraseBegin_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseBegin_pos()
 {
-    TEST_WRITE_READ_ERASE(idx, storage, storageBeginOffset);
+    TEST_WRITE_READ_ERASE(storageBeginOffset);
 }
 
 void
-test_storage_writeReadEraseMid_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseMid_pos()
 {
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
     const off_t middleOfStorage = storageSize / 2;
 
-    TEST_WRITE_READ_ERASE(idx, storage, middleOfStorage);
+    TEST_WRITE_READ_ERASE(middleOfStorage);
 }
 
 void
-test_storage_writeReadEraseEnd_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseEnd_pos()
 {
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
     const off_t endOfStorage = storageSize - TEST_DATA_SZ - 1;
 
-    TEST_WRITE_READ_ERASE(idx, storage, endOfStorage);
+    TEST_WRITE_READ_ERASE(endOfStorage);
 }
 
 void
-test_storage_writeReadEraseZeroBytes_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseZeroBytes_pos()
 {
-    TEST_START(idx);
+    TEST_START();
 
-    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ);
+    memset(storage_port, 0, TEST_DATA_SZ);
 
     const off_t testOffset = 0;
 
-    TEST_WRITE(storage, testOffset, testData, 0U);
-    TEST_READ (storage, testOffset, testData, 0U);
+    TEST_WRITE(testOffset, testData, 0U);
+    TEST_READ (testOffset, testData, 0U);
 
     off_t bytesErased = -1;
 
-    const OS_Error_t rslt = storage->interface.erase(
+    const OS_Error_t rslt = storage_rpc_erase(
                                 testOffset,
                                 0U,
                                 &bytesErased);
@@ -281,14 +273,12 @@ test_storage_writeReadEraseZeroBytes_pos(
  *
  */
 void
-test_storage_neighborRegionsUntouched_pos(
-    int idx,
-    Storage_t const * const storage)
+test_storage_neighborRegionsUntouched_pos()
 {
-    TEST_START(idx);
+    TEST_START();
 
     size_t storageBlockSize = 0U;
-    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+    TEST_SUCCESS(storage_rpc_getBlockSize(&storageBlockSize));
 
     // Setting up untouched region at the front
     const char untouchedFrontContent[] = "Please don't overwrite me!";
@@ -310,7 +300,6 @@ test_storage_neighborRegionsUntouched_pos(
     Debug_LOG_TRACE("Writing the front region.");
 
     TEST_WRITE(
-        storage,
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
@@ -318,7 +307,6 @@ test_storage_neighborRegionsUntouched_pos(
     Debug_LOG_TRACE("Verifying the front region.");
 
     TEST_READ(
-        storage,
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
@@ -343,35 +331,32 @@ test_storage_neighborRegionsUntouched_pos(
     const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
 
     Debug_LOG_TRACE("Verifying the back region.");
-    TEST_WRITE(storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
+    TEST_WRITE(untouchedBackAddress, untouchedBack, untouchedBack_sz);
     Debug_LOG_TRACE("Verifying the back region.");
-    TEST_READ (storage, untouchedBackAddress, untouchedBack, untouchedBack_sz);
+    TEST_READ (untouchedBackAddress, untouchedBack, untouchedBack_sz);
 
     // Writing verifying and erasing the test data.
     Debug_LOG_TRACE("Writing the test data.");
-    TEST_WRITE(storage, testDataAddress, testData, TEST_DATA_SZ);
+    TEST_WRITE(testDataAddress, testData, TEST_DATA_SZ);
     Debug_LOG_TRACE("Verifying the test data.");
-    TEST_READ (storage, testDataAddress, testData, TEST_DATA_SZ);
+    TEST_READ (testDataAddress, testData, TEST_DATA_SZ);
     Debug_LOG_TRACE("Erasing the test data.");
-    TEST_ERASE(storage, testDataAddress, TEST_DATA_SZ);
+    TEST_ERASE(testDataAddress, TEST_DATA_SZ);
 
     Debug_LOG_TRACE("Verifying that front region was untouched.");
     TEST_READ(
-        storage,
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
 
     Debug_LOG_TRACE("Verifying that back region was untouched.");
     TEST_READ(
-        storage,
         untouchedBackAddress,
         untouchedBack,
         untouchedBack_sz);
 
     //Clean up
     TEST_ERASE(
-        storage,
         untouchedFrontAddress,
         (untouchedFront_sz + TEST_DATA_SZ + untouchedBack_sz));
 
@@ -381,172 +366,146 @@ test_storage_neighborRegionsUntouched_pos(
     free(untouchedBack);
 }
 
-#define TEST_WRITE_NEG(storage, offset, size) do \
+#define TEST_WRITE_NEG(offset, size) do \
 { \
-    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
+    const size_t roundedDownSize = roundDownToBLockSize(size); \
     size_t bytesWritten = (size_t)-1; \
 \
     Debug_LOG_DEBUG( \
         "TEST_WRITE_NEG(" \
-        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
+        "offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
         "roundedDownSize = %zu)",  \
-        storage, offset, size, roundedDownSize); \
+        offset, size, roundedDownSize); \
 \
-    memcpy(OS_Dataport_getBuf(storage->port), testData, TEST_DATA_SZ); \
+    memcpy(storage_port, testData, TEST_DATA_SZ); \
 \
     TEST_NOT_SUCCESS( \
-        storage->interface.write(offset, roundedDownSize, &bytesWritten)); \
+        storage_rpc_write(offset, roundedDownSize, &bytesWritten)); \
 \
     ASSERT_EQ_SZ(0U, bytesWritten); \
 } while (0)
 
-#define TEST_READ_NEG(storage, offset, size) do \
+#define TEST_READ_NEG(offset, size) do \
 { \
-    const size_t roundedDownSize = roundDownToBLockSize(storage, size); \
+    const size_t roundedDownSize = roundDownToBLockSize(size); \
     size_t bytesRead = (size_t)-1; \
 \
     Debug_LOG_DEBUG( \
         "TEST_READ_NEG(" \
-        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
+        "offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
         "roundedDownSize = %zu)",  \
-        storage, offset, size, roundedDownSize); \
+        offset, size, roundedDownSize); \
 \
-    memset(OS_Dataport_getBuf(storage->port), 0, TEST_DATA_SZ); \
+    memset(storage_port, 0, TEST_DATA_SZ); \
     TEST_NOT_SUCCESS( \
-        storage->interface.read(offset, roundedDownSize, &bytesRead)); \
+        storage_rpc_read(offset, roundedDownSize, &bytesRead)); \
 \
     ASSERT_EQ_SZ(0U, bytesRead); \
 } while (0)
 
-#define TEST_ERASE_NEG(storage, offset, size) do \
+#define TEST_ERASE_NEG(offset, size) do \
 { \
     off_t bytesErased = -1; \
 \
     Debug_LOG_DEBUG( \
         "TEST_ERASE_NEG(" \
-        "storage = %p, offset = %" PRIiMAX ", size = %" PRIiMAX ")", \
-        storage, offset, size); \
+        "offset = %" PRIiMAX ", size = %" PRIiMAX ")", \
+        offset, size); \
 \
     TEST_NOT_SUCCESS( \
-        storage->interface.erase( \
-            roundDownToBLockSize(storage, offset), \
-            roundDownToBLockSize(storage, size), \
+        storage_rpc_erase( \
+            roundDownToBLockSize(offset), \
+            roundDownToBLockSize(size), \
             &bytesErased)); \
 \
     ASSERT_EQ_INT_MAX(0LL, bytesErased); \
 } while (0)
 
-#define TEST_WRITE_READ_ERASE_NEG(idx, storage, offset, size) do \
+#define TEST_WRITE_READ_ERASE_NEG(offset, size) do \
 { \
-    TEST_START(idx); \
+    TEST_START(); \
 \
-    TEST_WRITE_NEG(storage, offset, size); \
-    TEST_READ_NEG (storage, offset, size); \
-    TEST_ERASE_NEG(storage, offset, size); \
+    TEST_WRITE_NEG(offset, size); \
+    TEST_READ_NEG (offset, size); \
+    TEST_ERASE_NEG(offset, size); \
 \
     TEST_FINISH(); \
 } while (0)
 
 void
-test_storage_writeReadEraseLargerThanBuf_neg (
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseLargerThanBuf_neg ()
 {
     // Writing more bytes than the dataport size.
-    const off_t dataport_size = OS_Dataport_getSize(
-                                    storage->port) + TEST_DATA_SZ;
+    const off_t dataport_size = sizeof(storage_port) + TEST_DATA_SZ;
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, dataport_size, (off_t)TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(dataport_size, (off_t)TEST_DATA_SZ);
 }
 
 void
-test_storage_writeReadEraseOutside_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseOutside_neg()
 {
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
-    TEST_WRITE_READ_ERASE_NEG(idx, storage, storageSize, (off_t)TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(storageSize, (off_t)TEST_DATA_SZ);
 }
 
 void
-test_storage_writeReadEraseNegOffset_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseNegOffset_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
-        idx,
-        storage,
         (off_t)(0 - TEST_DATA_SZ),
         (off_t)TEST_DATA_SZ);
 }
 
 void
-test_storage_writeReadEraseIntMax_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseIntMax_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
-        idx,
-        storage,
         (off_t)INTMAX_MAX,
         (off_t)TEST_DATA_SZ);
 }
 
 void
-test_storage_writeReadEraseIntMin_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseIntMin_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
-        idx,
-        storage,
         (off_t)INTMAX_MIN,
         (off_t)TEST_DATA_SZ);
 }
 
 void
-test_storage_writeReadEraseSizeTooLarge_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseSizeTooLarge_neg()
 {
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
     ++storageSize; // Writing more bytes than the storage size.
 
     TEST_WRITE_READ_ERASE_NEG(
-        idx,
-        storage,
         storageBeginOffset,
         storageSize);
 }
 
 void
-test_storage_writeReadEraseSizeMax_neg(
-    int idx,
-    Storage_t const * const storage)
+test_storage_writeReadEraseSizeMax_neg()
 {
     off_t storageSize = 0U;
-    TEST_SUCCESS(storage->interface.getSize(&storageSize));
+    TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
     ++storageSize; // Writing more bytes than the storage size.
 
     TEST_WRITE_READ_ERASE_NEG(
-        idx,
-        storage,
         storageBeginOffset,
         (off_t)SIZE_MAX);
 }
 
 off_t
 roundDownToBLockSize(
-    Storage_t const * const storage,
     off_t value)
 {
     size_t storageBlockSize = 0U;
-    TEST_SUCCESS(storage->interface.getBlockSize(&storageBlockSize));
+    TEST_SUCCESS(storage_rpc_getBlockSize(&storageBlockSize));
 
     const off_t adjustedValue = (value / storageBlockSize)
                                         * storageBlockSize;

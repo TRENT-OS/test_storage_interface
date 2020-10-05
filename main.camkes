@@ -32,16 +32,20 @@ assembly {
         ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
 
         // RamDisk
-        component   RamDisk             ramDisk;
+        component   RamDisk ramDisk;
 
-        // ChanMux_Storage_tester
-        component   StorageInterfaceTester tester;
+        // Testers
+        component   StorageInterfaceTester tester_ramDisk;
+        component   StorageInterfaceTester tester_chanMux;
+        component   StorageInterfaceTester tester_storageServer1;
+        component   StorageInterfaceTester tester_storageServer2;
+        component   StorageInterfaceTester tester_storageServer3;
 
-        connection  seL4RPCCall         tester_chanMux_storage     (from tester.chanMuxStorage_rpc,  to chanMuxStorage.storage_rpc);
-        connection  seL4SharedData      tester_chanMux_storage_port(from tester.chanMuxStorage_port, to chanMuxStorage.storage_port);
+        connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
+        connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
 
-        connection  seL4RPCCall         tester_ramDisk             (from tester.ramDisk_rpc,         to ramDisk.storage_rpc);
-        connection  seL4SharedData      tester_ramDisk_port        (from tester.ramDisk_port,        to ramDisk.storage_port);
+        connection  seL4RPCCall         tester_chanMux_storage     (from tester_chanMux.storage_rpc,  to chanMuxStorage.storage_rpc);
+        connection  seL4SharedData      tester_chanMux_storage_port(from tester_chanMux.storage_port, to chanMuxStorage.storage_port);
 
         // Storage Server
         component   RamDisk             storageServerStorage;
@@ -49,9 +53,9 @@ assembly {
         DECLARE_AND_CONNECT_INSTANCE_StorageServer(
             StorageServer, storageServer,
             storageServerStorage.storage_rpc, storageServerStorage.storage_port,
-            tester.storageServer1_rpc, tester.storageServer1_port,
-            tester.storageServer2_rpc, tester.storageServer2_port,
-            tester.storageServer3_rpc, tester.storageServer3_port)
+            tester_storageServer1.storage_rpc, tester_storageServer1.storage_port,
+            tester_storageServer2.storage_rpc, tester_storageServer2.storage_port,
+            tester_storageServer3.storage_rpc, tester_storageServer3.storage_port)
     }
 
     configuration {
@@ -62,14 +66,23 @@ assembly {
             (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
 
         ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer1_rpc, STORAGESERVER_TESTER_IF1_ID)
+            tester_storageServer1, storage_rpc, STORAGESERVER_TESTER_IF1_ID)
         ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer2_rpc, STORAGESERVER_TESTER_IF2_ID)
+            tester_storageServer2, storage_rpc, STORAGESERVER_TESTER_IF2_ID)
         ASSIGN_CLIENT_BADGE_StorageServer(
-            tester, storageServer3_rpc, STORAGESERVER_TESTER_IF3_ID)
+            tester_storageServer3, storage_rpc, STORAGESERVER_TESTER_IF3_ID)
 
         // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
         // naming scheme is <component>.<interface>_attributes = <badge ID>
         ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
+
+        // TODO Tasks are having different priorities so that their outputs
+        // don't overlap. Final solution is described in the
+        // https://jira.hensoldt-cyber.systems/browse/SEOS-1799
+        tester_ramDisk._priority            = 150;
+        tester_storageServer1._priority     = 140;
+        tester_storageServer2._priority     = 130;
+        tester_storageServer3._priority     = 120;
+        tester_chanMux._priority            = 100;
     }
 }
