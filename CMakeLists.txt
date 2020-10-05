@@ -28,11 +28,7 @@ DeclareCAmkESComponent(
         os_libs
 )
 
-DeclareCAmkESComponent_UART(
-    UART
-)
-
-DeclareCAmkESComponent_ChanMux(
+DeclareCAmkESComponents_ChanMux_UART(
     ChanMux
     components/ChanMux/ChanMux_config.c
     system_config

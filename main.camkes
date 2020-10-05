@@ -7,9 +7,6 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 #include "system_config.h"
 
 
-#include "UART/Uart.camkes"
-DECLARE_COMPONENT_UART(UART)
-
 #include "ChanMux/ChanMux.camkes"
 ChanMux_DEFINE_COMPONENT(ChanMux,
         chanMuxStorage, chan)
@@ -25,12 +22,8 @@ DECLARE_COMPONENT_StorageServer(StorageServer)
 assembly {
     composition {
 
-        // UART
-        DECLARE_AND_CONNECT_INSTANCE_UART(
-            UART, uartDrv)
-
-        // ChanMux
-        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux, uartDrv)
+        // ChanMux + UART
+        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux)
 
         // ChanMux_Storage
         component   ChanMux_Storage chanMuxStorage;
@@ -62,11 +55,6 @@ assembly {
     }
 
     configuration {
-        CONFIGURE_INSTANCE_UART(
-            uartDrv,
-            CFG_CHANMUX_DEFAULT_UART_PHYS_ADDR,
-            CFG_CHANMUX_DEFAULT_UART_INTR)
-
         CONFIGURE_INSTANCE_StorageServer(
             storageServer,
             (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
