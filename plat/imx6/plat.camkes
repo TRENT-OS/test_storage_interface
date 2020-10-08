@@ -1,0 +1,24 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+#include "SdHostController/SdHostController.camkes"
+DECLARE_COMPONENT_SDHC(Sdhc);
+
+assembly {
+    composition {
+
+        component   StorageInterfaceTester tester_sdhc;
+
+        // SDHC
+        DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
+
+        connection  seL4RPCCall         tester_sdhc_rpc (from tester_sdhc.storage_rpc,  to sdhc.storage_rpc);
+        connection  seL4SharedData      tester_sdhc_port(from tester_sdhc.storage_port, to sdhc.storage_port);
+    }
+
+    configuration {
+
+        CONFIGURE_INSTANCE_SDHC(sdhc, 4)
+
+        tester_sdhc._priority = 110;
+    }
+}

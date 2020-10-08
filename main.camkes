@@ -6,7 +6,6 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 
 #include "system_config.h"
 
-
 #include "ChanMux/ChanMux.camkes"
 ChanMux_DEFINE_COMPONENT(ChanMux,
         chanMuxStorage, chan)
@@ -18,6 +17,8 @@ DECLARE_COMPONENT_RamDisk(RamDisk)
 
 #include "StorageServer/camkes/StorageServer.camkes"
 DECLARE_COMPONENT_StorageServer(StorageServer)
+
+#include "plat.camkes"
 
 assembly {
     composition {
