@@ -26,6 +26,12 @@
 #define Debug_Config_INCLUDE_LEVEL_IN_MSG
 #define Debug_Config_LOG_WITH_FILE_LINE
 
+//-----------------------------------------------------------------------------
+// Logger
+//-----------------------------------------------------------------------------
+// The value here is arbitrary and depends on the intended length of the log
+// message. It can be at most SysLogger_MAX_MSG_SIZE
+#define SysLogger_Config_MSG_SIZE                256
 
 //-----------------------------------------------------------------------------
 // Memory

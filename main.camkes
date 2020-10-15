@@ -22,6 +22,7 @@ RamDisk_COMPONENT_DEFINE(RamDisk)
 StorageServer_COMPONENT_DEFINE(StorageServer)
 
 #include "plat_system_config.h"
+#include "syslog.camkes"
 
 assembly {
     composition {
@@ -73,6 +74,15 @@ assembly {
             tester_storageServer2.storage_rpc, tester_storageServer2.storage_port,
             tester_storageServer3.storage_rpc, tester_storageServer3.storage_port
         )
+
+        SysLogger_INSTANCE_CONNECT_CLIENTS(
+                sysLogger,
+                tester_ramDisk,
+                tester_chanMux,
+                tester_storageServer1,
+                tester_storageServer2,
+                tester_storageServer3
+        )
     }
 
     configuration {
@@ -92,14 +102,5 @@ assembly {
         ChanMux_UART_CLIENT_ASSIGN_BADGES(
             chanMuxStorage.chanMux_Rpc
         )
-
-        // TODO Tasks are having different priorities so that their outputs
-        // don't overlap. Final solution is described in the
-        // https://jira.hensoldt-cyber.systems/browse/SEOS-1799
-        tester_ramDisk._priority            = 150;
-        tester_storageServer1._priority     = 140;
-        tester_storageServer2._priority     = 130;
-        tester_storageServer3._priority     = 120;
-        tester_chanMux._priority            = 100;
     }
 }

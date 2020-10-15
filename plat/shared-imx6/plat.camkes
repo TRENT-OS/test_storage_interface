@@ -5,6 +5,7 @@
  *
  */
 
+#include "syslog.camkes"
 #include "SdHostController/SdHostController.camkes"
 SdHostController_COMPONENT_DEFINE(SdHostController);
 SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
@@ -31,6 +32,7 @@ assembly {
             storageServerSd,
             tester_sdhc.storage_rpc, tester_sdhc.storage_port
         )
+        SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
 
     }
 

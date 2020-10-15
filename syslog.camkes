@@ -1,0 +1,12 @@
+/* Copyright (C) 2021, HENSOLDT Cyber GmbH */
+
+#pragma once
+
+#include "SysLogger/camkes/SysLogger.camkes"
+SysLogger_COMPONENT_DEFINE_NO_SPOOLERS(SysLogger)
+
+assembly {
+    composition {
+        component SysLogger sysLogger;
+    }
+}

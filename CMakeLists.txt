@@ -31,6 +31,7 @@ DeclareCAmkESComponent(
         system_config
         os_core_api
         lib_debug
+        syslogger_client
 )
 
 ChanMux_UART_DeclareCAmkESComponents(
@@ -57,6 +58,11 @@ SdHostController_DeclareCAmkESComponent(
 )
 
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
+
+DeclareCAmkESComponent_SysLogger(
+    SysLogger
+    system_config
+)
 
 #ROOT SERVER
 DeclareAndCreateCamkESSystem(main.camkes)

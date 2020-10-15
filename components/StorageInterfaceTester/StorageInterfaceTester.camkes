@@ -1,10 +1,12 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
+#include "SysLogger/camkes/SysLogger.camkes"
 import <if_OS_Storage.camkes>;
 
 component StorageInterfaceTester {
     control;
 
+    SysLogger_CLIENT_DECLARE_CONNECTOR(sysLogger)
     // Storage Under Test interface
     uses     if_OS_Storage storage_rpc;
     dataport Buf           storage_port;

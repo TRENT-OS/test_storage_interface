@@ -6,6 +6,7 @@
  */
 #include "test_storage.h"
 #include "lib_debug/Debug.h"
+#include "SysLoggerClient.h"
 
 #include <camkes.h>
 
@@ -13,6 +14,9 @@
 
 int run()
 {
+    OS_Error_t err = SysLoggerClient_init(sysLogger_Rpc_log);
+    Debug_ASSERT(err == OS_SUCCESS);
+
     uint32_t stateBitmap = 0;
 
     if (!strcmp(get_instance_name(), "tester_sdhc") &&
