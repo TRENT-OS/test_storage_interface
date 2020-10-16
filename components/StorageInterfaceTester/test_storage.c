@@ -55,10 +55,10 @@ roundDownToBLockSize(
     size_t bytesWritten = 0U; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_WRITE(" \
+        "%s::TEST_WRITE(" \
         "offset = %" PRIiMAX ", data = %p, size = %zu, " \
         "roundedDownSize = %zu)",  \
-        offset, data, size, roundedDownSize); \
+        get_instance_name(), offset, data, size, roundedDownSize); \
 \
     memcpy(storage_port, data, roundedDownSize); \
     TEST_SUCCESS( \
@@ -75,10 +75,10 @@ roundDownToBLockSize(
     size_t bytesRead = 0U; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_READ(" \
+        "%s::TEST_READ(" \
         "offset = %" PRIiMAX ", expectedData = %p, size = %zu, " \
         "roundedDownSize = %zu)",  \
-        offset, expectedData, size, roundedDownSize); \
+        get_instance_name(), offset, expectedData, size, roundedDownSize); \
 \
     memset(storage_port, 0, roundedDownSize); \
     TEST_SUCCESS( \
@@ -101,9 +101,9 @@ roundDownToBLockSize(
     off_t bytesErased = -1; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_ERASE(" \
+        "%s::TEST_ERASE(" \
         "offset = %" PRIiMAX ", size = %zu, ", \
-        offset, size); \
+        get_instance_name(), offset, size); \
 \
     const OS_Error_t rslt = storage_rpc_erase( \
                                 roundDownToBLockSize(offset), \
@@ -116,7 +116,8 @@ roundDownToBLockSize(
         ASSERT_EQ_INT_MAX(0LL, bytesErased); \
 \
         Debug_LOG_WARNING( \
-            "Erase function is not implemented. Was it intended?"); \
+            "Erase function is not implemented for %s. Was it intended?", \
+            get_instance_name()); \
 \
         break; \
     }\
@@ -159,7 +160,7 @@ test_storage_size_pos()
     off_t storageSize = 0U;
     TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
-    Debug_LOG_DEBUG("Storage under test's size is: %" PRIiMAX, storageSize);
+    Debug_LOG_DEBUG("%s size is: %" PRIiMAX, get_instance_name(), storageSize);
 
     // Storage shall be at least three times bigger than the test string, so
     // that it can be stored at the beginning, in the center and at the end of
@@ -176,6 +177,9 @@ test_storage_blockSize_pos()
 
     size_t storageBlockSize = 0U;
     TEST_SUCCESS(storage_rpc_getBlockSize(&storageBlockSize));
+
+    Debug_LOG_DEBUG(
+        "%s block size is: %zu", get_instance_name(), storageBlockSize);
 
     // Different storages have different block sizes, but nevertheless the block
     // size must always be greater than 0.
@@ -196,7 +200,8 @@ test_storage_state_pos()
 
     (void)rslt;
     Debug_LOG_DEBUG(
-        "Called storage_rpc_getState(&flags). flags = %u, rslt = %i",
+        "%s::storage_rpc_getState(&flags). flags = %u, rslt = %i",
+        get_instance_name(),
         flags,
         rslt);
 
@@ -297,14 +302,14 @@ test_storage_neighborRegionsUntouched_pos()
 
     const off_t untouchedFrontAddress = storageBeginOffset;
 
-    Debug_LOG_TRACE("Writing the front region.");
+    Debug_LOG_TRACE("%s: Writing the front region.", get_instance_name());
 
     TEST_WRITE(
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
 
-    Debug_LOG_TRACE("Verifying the front region.");
+    Debug_LOG_TRACE("%s: Verifying the front region.", get_instance_name());
 
     TEST_READ(
         untouchedFrontAddress,
@@ -330,26 +335,28 @@ test_storage_neighborRegionsUntouched_pos()
 
     const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
 
-    Debug_LOG_TRACE("Verifying the back region.");
+    Debug_LOG_TRACE("%s: Verifying the back region.", get_instance_name());
     TEST_WRITE(untouchedBackAddress, untouchedBack, untouchedBack_sz);
-    Debug_LOG_TRACE("Verifying the back region.");
+    Debug_LOG_TRACE("%s: Verifying the back region.", get_instance_name());
     TEST_READ (untouchedBackAddress, untouchedBack, untouchedBack_sz);
 
     // Writing verifying and erasing the test data.
-    Debug_LOG_TRACE("Writing the test data.");
+    Debug_LOG_TRACE("%s: Writing the test data.", get_instance_name());
     TEST_WRITE(testDataAddress, testData, TEST_DATA_SZ);
-    Debug_LOG_TRACE("Verifying the test data.");
+    Debug_LOG_TRACE("%s: Verifying the test data.", get_instance_name());
     TEST_READ (testDataAddress, testData, TEST_DATA_SZ);
-    Debug_LOG_TRACE("Erasing the test data.");
+    Debug_LOG_TRACE("%s: Erasing the test data.", get_instance_name());
     TEST_ERASE(testDataAddress, TEST_DATA_SZ);
 
-    Debug_LOG_TRACE("Verifying that front region was untouched.");
+    Debug_LOG_TRACE(
+        "%s: Verifying that front region was untouched.", get_instance_name());
     TEST_READ(
         untouchedFrontAddress,
         untouchedFront,
         untouchedFront_sz);
 
-    Debug_LOG_TRACE("Verifying that back region was untouched.");
+    Debug_LOG_TRACE(
+        "%s: Verifying that back region was untouched.", get_instance_name());
     TEST_READ(
         untouchedBackAddress,
         untouchedBack,
@@ -372,10 +379,10 @@ test_storage_neighborRegionsUntouched_pos()
     size_t bytesWritten = (size_t)-1; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_WRITE_NEG(" \
+        "%s::TEST_WRITE_NEG(" \
         "offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
         "roundedDownSize = %zu)",  \
-        offset, size, roundedDownSize); \
+        get_instance_name(), offset, size, roundedDownSize); \
 \
     memcpy(storage_port, testData, TEST_DATA_SZ); \
 \
@@ -391,10 +398,10 @@ test_storage_neighborRegionsUntouched_pos()
     size_t bytesRead = (size_t)-1; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_READ_NEG(" \
+        "%s::TEST_READ_NEG(" \
         "offset = %" PRIiMAX ", size = %" PRIiMAX ")" \
         "roundedDownSize = %zu)",  \
-        offset, size, roundedDownSize); \
+        get_instance_name(), offset, size, roundedDownSize); \
 \
     memset(storage_port, 0, TEST_DATA_SZ); \
     TEST_NOT_SUCCESS( \
@@ -408,9 +415,9 @@ test_storage_neighborRegionsUntouched_pos()
     off_t bytesErased = -1; \
 \
     Debug_LOG_DEBUG( \
-        "TEST_ERASE_NEG(" \
+        "%s::TEST_ERASE_NEG(" \
         "offset = %" PRIiMAX ", size = %" PRIiMAX ")", \
-        offset, size); \
+        get_instance_name(), offset, size); \
 \
     TEST_NOT_SUCCESS( \
         storage_rpc_erase( \
@@ -511,9 +518,10 @@ roundDownToBLockSize(
                                         * storageBlockSize;
 
     Debug_LOG_DEBUG(
-        "Adjusting given value to be aligned with the block size: "
+        "%s: Adjusting given value to be aligned with the block size: "
         "value = %" PRIiMAX " "
         "adjustedValue = %" PRIiMAX,
+        get_instance_name(),
         value,
         adjustedValue);
 
