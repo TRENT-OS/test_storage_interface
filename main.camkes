@@ -13,7 +13,7 @@ ChanMux_DEFINE_COMPONENT(ChanMux,
 #include "ChanMux_Storage/ChanMux_Storage.camkes"
 
 #include "RamDisk/RamDisk.camkes"
-DECLARE_COMPONENT_RamDisk(RamDisk)
+RamDisk_COMPONENT_DECLARE(RamDisk)
 
 #include "StorageServer/camkes/StorageServer.camkes"
 DECLARE_COMPONENT_StorageServer(StorageServer)
