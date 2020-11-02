@@ -43,7 +43,7 @@ RamDisk_DeclareCAmkESComponent(
     system_config
 )
 
-DeclareCAmkESComponent_StorageServer(
+StorageServer_DeclareCAmkESComponent(
     StorageServer
 )
 
