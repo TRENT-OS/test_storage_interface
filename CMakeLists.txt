@@ -38,7 +38,7 @@ DeclareCAmkESComponent_ChanMux_Storage(
     ChanMux_Storage
 )
 
-DeclareCAmkESComponent_RamDisk(
+RamDisk_DeclareCAmkESComponent(
     RamDisk
     system_config
 )
