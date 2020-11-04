@@ -53,24 +53,19 @@
 // we can't make this an enum, because CAmkES does not understand enums.
 #define CHANMUX_ID 101
 
-//-----------------------------------------------------------------------------
-// StorageServer clients
-//-----------------------------------------------------------------------------
 /**
- * @brief   The storage size available for each of the storage server clients.
+ * @brief   Size of the test data set.
  *
- * @note    Must be three times larger than the test data array used in this
- *          test system.
+ * @note    Size of the test data set is a prime number so that it is very
+ *          unlikely that it collides with any block size, and also it is bigger
+ *          than two blocks of common 512 bytes.
  */
-#define STORAGE_SERVER_CLIENT_SZ 4096
+#define TEST_DATA_SZ 1237
 
-//-----------------------------------------------------------------------------
-// RamDisk
-//-----------------------------------------------------------------------------
 /**
- * @brief   Size of the RAM Disks used in this test system
+ * @brief   The minimum test storage size.
  *
- * @note    Must be large enough to hold data for all of the storage server
- *          clients.
+ * @note    Must be at least three times the size of the test data array used in
+ *          this test system.
  */
-#define RAMDISK_SIZE_BYTES (3 * STORAGE_SERVER_CLIENT_SZ)
+#define TEST_STORAGE_MIN_SIZE   (3 * TEST_DATA_SZ)

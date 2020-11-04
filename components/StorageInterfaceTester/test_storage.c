@@ -1,6 +1,7 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
 #include "test_storage.h"
+#include "system_config.h"
 #include "TestMacros.h"
 
 #include <stdlib.h>
@@ -10,11 +11,10 @@ static const off_t storageBeginOffset = 0U;
 /**
  * @brief   Random data used in the test.
  *
- * @note    Size of the test data is a prime number so that it is very unlikely
- *          that it collides with any block size, and also it is bigger than two
- *          blocks of common 512 bytes.
+ * @note    If TEST_DATA_SZ is changed, please update the content of this
+ *          array as well, so that it is filled fully with random data.
  */
-static const char testData[] =
+static const char testData[TEST_DATA_SZ] =
     "537QNNHTI4PNJ207V9X4EQ6N7IT1S02EYBTUZOBDLL4IDSCDBJB6Y1QHX5JKIH6G"
     "05G73K3SIIFJ0D601PDZUM2N58472UBW5SO4T6YU8X7ZFH0LABTXLJ9GFNTR0A8Q"
     "AYTS13BDOOJM0M5J9PF51L3Z5M91SSJVFZI4TLJLXYHT5O9H3V3MK2W54I5FZQPA"
@@ -44,7 +44,6 @@ off_t
 roundDownToBLockSize(
     off_t value);
 
-#define TEST_DATA_SZ (sizeof(testData) / sizeof(*testData))
 #define ERASED_PATTERN 0xFF
 
 // Helper functions wrapped in macros so that we get the proper line number in

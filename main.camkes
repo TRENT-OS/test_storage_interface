@@ -56,9 +56,9 @@ assembly {
     configuration {
         StorageServer_INSTANCE_CONFIGURE_CLIENTS(
             storageServer,
-            (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
+            (0 * TEST_STORAGE_MIN_SIZE), TEST_STORAGE_MIN_SIZE,
+            (1 * TEST_STORAGE_MIN_SIZE), TEST_STORAGE_MIN_SIZE,
+            (2 * TEST_STORAGE_MIN_SIZE), TEST_STORAGE_MIN_SIZE
         )
 
         StorageServer_CLIENT_ASSIGN_BADGES(
@@ -66,6 +66,12 @@ assembly {
             tester_storageServer2.storage_rpc,
             tester_storageServer3.storage_rpc
         )
+
+        ramDisk.storage_size = TEST_STORAGE_MIN_SIZE;
+
+        // Storage Server's underlying storage must be large enough for all
+        // clients (3 at the moment).
+        storageServerStorage.storage_size = (3 * TEST_STORAGE_MIN_SIZE);
 
         // Set drivers's priority to low so that printf() collisions with
         // application layer are avoided. This is a temporary workaround.
