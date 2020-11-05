@@ -48,7 +48,7 @@ StorageServer_DeclareCAmkESComponent(
 )
 
 SdHostController_DeclareCAmkESComponent(
-    Sdhc
+    SdHostController
 )
 
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
