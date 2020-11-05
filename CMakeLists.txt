@@ -47,7 +47,7 @@ StorageServer_DeclareCAmkESComponent(
     StorageServer
 )
 
-DeclareCAmkESComponent_SdHostController(
+SdHostController_DeclareCAmkESComponent(
     Sdhc
 )
 
