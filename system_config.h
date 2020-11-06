@@ -56,10 +56,6 @@
  */
 #define STORAGE_SERVER_CLIENT_SZ 4096
 
-#define STORAGESERVER_TESTER_IF1_ID 1
-#define STORAGESERVER_TESTER_IF2_ID 2
-#define STORAGESERVER_TESTER_IF3_ID 3
-
 //-----------------------------------------------------------------------------
 // RamDisk
 //-----------------------------------------------------------------------------

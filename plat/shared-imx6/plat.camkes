@@ -33,8 +33,8 @@ assembly {
             storageServerSd,
             TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
         )
-        StorageServer_CLIENT_ASSIGN_BADGE(
-            tester_sdhc.storage_rpc, 1
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_sdhc.storage_rpc
         )
 
         CONFIGURE_INSTANCE_SDHC(sdhc, SDIO_PORT)

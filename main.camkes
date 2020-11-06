@@ -80,14 +80,10 @@ assembly {
             (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
         )
 
-        StorageServer_CLIENT_ASSIGN_BADGE(
-            tester_storageServer1.storage_rpc, STORAGESERVER_TESTER_IF1_ID
-        )
-        StorageServer_CLIENT_ASSIGN_BADGE(
-            tester_storageServer2.storage_rpc, STORAGESERVER_TESTER_IF2_ID
-        )
-        StorageServer_CLIENT_ASSIGN_BADGE(
-            tester_storageServer3.storage_rpc, STORAGESERVER_TESTER_IF3_ID
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_storageServer1.storage_rpc,
+            tester_storageServer2.storage_rpc,
+            tester_storageServer3.storage_rpc
         )
 
         ChanMux_UART_CLIENT_ASSIGN_BADGES(
