@@ -1,7 +1,8 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
 #include "SdHostController/SdHostController.camkes"
-DECLARE_COMPONENT_SDHC(Sdhc);
+SdHostController_COMPONENT_DECLARE(SdHostController);
+SdHostController_HW_COMPONENT_DECLARE(SdHostController_HW);
 
 #ifndef SDIO_PORT
 #error "Please specify the desired SDIO port."
@@ -13,8 +14,13 @@ assembly {
         component   StorageInterfaceTester tester_sdhc;
 
         // SDHC
-        DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
+        component   SdHostController_HW     sdhcHw;
+        component   SdHostController        sdhc;
+        SdHostController_INSTANCE_CONNECT(
+            sdhc, sdhcHw
+        )
 
+        // StorageServer
         component   StorageServer   storageServerSd;
         StorageServer_INSTANCE_CONNECT(
             storageServerSd,
@@ -37,7 +43,12 @@ assembly {
             tester_sdhc.storage_rpc
         )
 
-        CONFIGURE_INSTANCE_SDHC(sdhc, SDIO_PORT)
+        SdHostController_HW_INSTANCE_CONFIGURE(
+            sdhcHw, SDIO_PORT
+        )
+        SdHostController_INSTANCE_CONFIGURE(
+            sdhc, SDIO_PORT
+        )
 
         tester_sdhc._priority = 110;
     }
