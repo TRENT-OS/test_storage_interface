@@ -15,20 +15,27 @@ assembly {
         // SDHC
         DECLARE_AND_CONNECT_INSTANCE_SDHC(Sdhc, sdhc)
 
-        DECLARE_AND_CONNECT_INSTANCE_StorageServer(
-            StorageServer, storageServerSd,
-            sdhc.storage_rpc, sdhc.storage_port,
-            tester_sdhc.storage_rpc, tester_sdhc.storage_port)
+        component   StorageServer   storageServerSd;
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSd,
+            sdhc.storage_rpc, sdhc.storage_port
+        )
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSd,
+            tester_sdhc.storage_rpc, tester_sdhc.storage_port
+        )
+
     }
 
     configuration {
 
-        CONFIGURE_INSTANCE_StorageServer(
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
             storageServerSd,
-            TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE)
-
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester_sdhc, storage_rpc, 1)
+            TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
+        )
+        StorageServer_CLIENT_ASSIGN_BADGE(
+            tester_sdhc.storage_rpc, 1
+        )
 
         CONFIGURE_INSTANCE_SDHC(sdhc, SDIO_PORT)
 
