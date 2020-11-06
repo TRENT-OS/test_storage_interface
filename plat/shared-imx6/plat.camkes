@@ -43,12 +43,35 @@ assembly {
             tester_sdhc.storage_rpc
         )
 
+#if (SDIO_PORT == 1)
         SdHostController_HW_INSTANCE_CONFIGURE(
-            sdhcHw, SDIO_PORT
+            sdhcHw, 1
         )
         SdHostController_INSTANCE_CONFIGURE(
-            sdhc, SDIO_PORT
+            sdhc, 1
         )
+#elif (SDIO_PORT == 2)
+        SdHostController_HW_INSTANCE_CONFIGURE(
+            sdhcHw, 2
+        )
+        SdHostController_INSTANCE_CONFIGURE(
+            sdhc, 2
+        )
+#elif (SDIO_PORT == 3)
+        SdHostController_HW_INSTANCE_CONFIGURE(
+            sdhcHw, 3
+        )
+        SdHostController_INSTANCE_CONFIGURE(
+            sdhc, 3
+        )
+#elif (SDIO_PORT == 4)
+        SdHostController_HW_INSTANCE_CONFIGURE(
+            sdhcHw, 4
+        )
+        SdHostController_INSTANCE_CONFIGURE(
+            sdhc, 4
+        )
+#endif
 
         tester_sdhc._priority = 110;
     }
