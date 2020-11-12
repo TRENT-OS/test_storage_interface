@@ -6,15 +6,6 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 
 #include "system_config.h"
 
-#include "ChanMux/ChanMux_UART.camkes"
-ChanMux_UART_COMPONENT_DEFINE(
-    ChanMux_UART,
-    chanMuxStorage, chan
-)
-
-#include "Storage_ChanMux/Storage_ChanMux.camkes"
-Storage_ChanMux_COMPONENT_DEFINE(Storage_ChanMux)
-
 #include "RamDisk/RamDisk.camkes"
 RamDisk_COMPONENT_DEFINE(RamDisk)
 
@@ -25,39 +16,17 @@ StorageServer_COMPONENT_DEFINE(StorageServer)
 
 assembly {
     composition {
-
-        // ChanMux_UART + UART
-        component ChanMux_UART chanMux_UART;
-        component UART_CHANMUX uart;
-        // Storage_ChanMux
-        component   Storage_ChanMux chanMuxStorage;
-
-        ChanMux_UART_INSTANCE_CONNECT(
-            chanMux_UART,
-            uart
-        )
-        ChanMux_UART_INSTANCE_CONNECT_CLIENT(
-            chanMux_UART,
-            chanMuxStorage, chan
-        )
-
         // RamDisk
         component   RamDisk ramDisk;
 
         // Testers
         component   StorageInterfaceTester tester_ramDisk;
-        component   StorageInterfaceTester tester_chanMux;
         component   StorageInterfaceTester tester_storageServer1;
         component   StorageInterfaceTester tester_storageServer2;
         component   StorageInterfaceTester tester_storageServer3;
-
+        
         connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
         connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
-
-        Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
-            chanMuxStorage,
-            tester_chanMux.storage_rpc, tester_chanMux.storage_port
-        )
 
         // Storage Server
         component   RamDisk             storageServerStorage;
@@ -80,18 +49,14 @@ assembly {
             storageServer,
             (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
             (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
-        )
+            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
 
-        StorageServer_CLIENT_ASSIGN_BADGES(
-            tester_storageServer1.storage_rpc,
-            tester_storageServer2.storage_rpc,
-            tester_storageServer3.storage_rpc
-        )
-
-        ChanMux_UART_CLIENT_ASSIGN_BADGES(
-            chanMuxStorage.chanMux_Rpc
-        )
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            tester_storageServer1, storage_rpc, STORAGESERVER_TESTER_IF1_ID)
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            tester_storageServer2, storage_rpc, STORAGESERVER_TESTER_IF2_ID)
+        ASSIGN_CLIENT_BADGE_StorageServer(
+            tester_storageServer3, storage_rpc, STORAGESERVER_TESTER_IF3_ID)
 
         // TODO Tasks are having different priorities so that their outputs
         // don't overlap. Final solution is described in the
@@ -100,6 +65,5 @@ assembly {
         tester_storageServer1._priority     = 140;
         tester_storageServer2._priority     = 130;
         tester_storageServer3._priority     = 120;
-        tester_chanMux._priority            = 100;
     }
 }

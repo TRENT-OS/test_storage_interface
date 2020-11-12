@@ -1,5 +1,11 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
+#include "ChanMux/ChanMux.camkes"
+ChanMux_DEFINE_COMPONENT(ChanMux,
+        chanMuxStorage, chan)
+
+#include "ChanMux_Storage/ChanMux_Storage.camkes"
+
 #include "SdHostController/SdHostController.camkes"
 SdHostController_COMPONENT_DEFINE(SdHostController);
 SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
@@ -10,6 +16,19 @@ SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
 
 assembly {
     composition {
+        // ChanMux + UART
+        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux)
+
+        // ChanMux_Storage
+        component   ChanMux_Storage chanMuxStorage;
+
+        ChanMux_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
+        ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
+                
+        component   StorageInterfaceTester tester_chanMux;
+
+        connection  seL4RPCCall         tester_chanMux_storage     (from tester_chanMux.storage_rpc,  to chanMuxStorage.storage_rpc);
+        connection  seL4SharedData      tester_chanMux_storage_port(from tester_chanMux.storage_port, to chanMuxStorage.storage_port);
 
         component   StorageInterfaceTester tester_sdhc;
 
@@ -34,6 +53,9 @@ assembly {
     }
 
     configuration {
+        // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
+        // naming scheme is <component>.<interface>_attributes = <badge ID>
+        ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
 
         StorageServer_INSTANCE_CONFIGURE_CLIENTS(
             storageServerSd,
@@ -73,6 +95,7 @@ assembly {
         )
 #endif
 
-        tester_sdhc._priority = 110;
+        tester_sdhc._priority       = 110;
+        tester_chanMux._priority    = 100;
     }
 }
