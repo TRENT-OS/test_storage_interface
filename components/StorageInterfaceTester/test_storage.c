@@ -461,7 +461,7 @@ void
 test_storage_writeReadEraseNegOffset_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
-        (off_t)(0 - TEST_DATA_SZ),
+        -((off_t)TEST_DATA_SZ),
         (off_t)TEST_DATA_SZ);
 }
 
