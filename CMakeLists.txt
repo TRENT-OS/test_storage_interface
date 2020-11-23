@@ -34,8 +34,8 @@ ChanMux_UART_DeclareCAmkESComponents(
     system_config
 )
 
-ChanMux_Storage_DeclareCAmkESComponent(
-    ChanMux_Storage
+Storage_ChanMux_DeclareCAmkESComponent(
+    Storage_ChanMux
 )
 
 RamDisk_DeclareCAmkESComponent(

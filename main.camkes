@@ -12,8 +12,8 @@ ChanMux_UART_COMPONENT_DEFINE(
     chanMuxStorage, chan
 )
 
-#include "ChanMux_Storage/ChanMux_Storage.camkes"
-ChanMux_Storage_COMPONENT_DEFINE(ChanMux_Storage)
+#include "Storage_ChanMux/Storage_ChanMux.camkes"
+Storage_ChanMux_COMPONENT_DEFINE(Storage_ChanMux)
 
 #include "RamDisk/RamDisk.camkes"
 RamDisk_COMPONENT_DEFINE(RamDisk)
@@ -29,8 +29,8 @@ assembly {
         // ChanMux_UART + UART
         component ChanMux_UART chanMux_UART;
         component UART_CHANMUX uart;
-        // ChanMux_Storage
-        component   ChanMux_Storage chanMuxStorage;
+        // Storage_ChanMux
+        component   Storage_ChanMux chanMuxStorage;
 
         ChanMux_UART_INSTANCE_CONNECT(
             chanMux_UART,
@@ -54,7 +54,7 @@ assembly {
         connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
         connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
 
-        ChanMux_Storage_INSTANCE_CONNECT_CLIENT(
+        Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
             chanMuxStorage,
             tester_chanMux.storage_rpc, tester_chanMux.storage_port
         )
