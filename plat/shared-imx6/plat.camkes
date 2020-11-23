@@ -1,8 +1,8 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
 #include "SdHostController/SdHostController.camkes"
-SdHostController_COMPONENT_DECLARE(SdHostController);
-SdHostController_HW_COMPONENT_DECLARE(SdHostController_HW);
+SdHostController_COMPONENT_DEFINE(SdHostController);
+SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
 
 #ifndef SDIO_PORT
 #error "Please specify the desired SDIO port."

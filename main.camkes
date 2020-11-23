@@ -13,13 +13,13 @@ ChanMux_UART_COMPONENT_DEFINE(
 )
 
 #include "ChanMux_Storage/ChanMux_Storage.camkes"
-ChanMux_Storage_COMPONENT_DECLARE(ChanMux_Storage)
+ChanMux_Storage_COMPONENT_DEFINE(ChanMux_Storage)
 
 #include "RamDisk/RamDisk.camkes"
-RamDisk_COMPONENT_DECLARE(RamDisk)
+RamDisk_COMPONENT_DEFINE(RamDisk)
 
 #include "StorageServer/camkes/StorageServer.camkes"
-StorageServer_COMPONENT_DECLARE(StorageServer)
+StorageServer_COMPONENT_DEFINE(StorageServer)
 
 #include "plat_system_config.h"
 
