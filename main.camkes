@@ -6,9 +6,11 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 
 #include "system_config.h"
 
-#include "ChanMux/ChanMux.camkes"
-ChanMux_DEFINE_COMPONENT(ChanMux,
-        chanMuxStorage, chan)
+#include "ChanMux/ChanMux_UART.camkes"
+ChanMux_UART_COMPONENT_DEFINE(
+    ChanMux_UART,
+    chanMuxStorage, chan
+)
 
 #include "ChanMux_Storage/ChanMux_Storage.camkes"
 
@@ -23,14 +25,20 @@ DECLARE_COMPONENT_StorageServer(StorageServer)
 assembly {
     composition {
 
-        // ChanMux + UART
-        ChanMux_DECLARE_AND_CONNECT_INSTANCE_TO_UART(ChanMux, chanMux)
-
+        // ChanMux_UART + UART
+        component ChanMux_UART chanMux_UART;
+        component UART_CHANMUX uart;
         // ChanMux_Storage
         component   ChanMux_Storage chanMuxStorage;
 
-        ChanMux_INSTANCE_CONNECT_INTERFACE(chanMux, chanMuxStorage)
-        ChanMux_INSTANCE_CONNECT_CHANNEL(chanMux, chanMuxStorage, chan)
+        ChanMux_UART_INSTANCE_CONNECT(
+            chanMux_UART,
+            uart
+        )
+        ChanMux_UART_INSTANCE_CONNECT_CLIENT(
+            chanMux_UART,
+            chanMuxStorage, chan
+        )
 
         // RamDisk
         component   RamDisk ramDisk;
@@ -73,9 +81,9 @@ assembly {
         ASSIGN_CLIENT_BADGE_StorageServer(
             tester_storageServer3, storage_rpc, STORAGESERVER_TESTER_IF3_ID)
 
-        // assign endpoint badges for n:1 RPC interface of ChanMUX. The generic
-        // naming scheme is <component>.<interface>_attributes = <badge ID>
-        ChanMux_ASSIGN_CLIENT_BADGE(chanMux, chanMuxStorage, CHANMUX_ID)
+        ChanMux_UART_CLIENT_ASSIGN_BADGES(
+            chanMuxStorage.chanMux_Rpc
+        )
 
         // TODO Tasks are having different priorities so that their outputs
         // don't overlap. Final solution is described in the

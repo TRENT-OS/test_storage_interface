@@ -33,7 +33,7 @@ static const ChanMux_ChannelCtx_t channelCtx[] = {
         nvm_fifo, // must be the buffer and not a pointer
         CHANMUX_DATAPORT_ASSIGN(chanMuxStorage_chan_portRead,
                                 chanMuxStorage_chan_portWrite),
-        chanMuxStorage_chan_DataAvailable_emit),
+        chanMuxStorage_chan_eventHasData_emit),
 
 };
 
