@@ -1,7 +1,7 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 
 #include "test_storage.h"
-#include "TestMacros.h"
+#include "LibMacros/Test.h"
 
 #include <stdlib.h>
 
