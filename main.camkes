@@ -89,9 +89,9 @@ assembly {
             tester_storageServer3.storage_rpc
         )
 
-        ChanMux_UART_CLIENT_ASSIGN_BADGES(
-            chanMuxStorage.chanMux_Rpc
-        )
+        ChanMux_INSTANCE_ASSIGN_CLIENT_BADGES(
+            chanMux,
+                chanMuxStorage, CHANMUX_ID)
 
         // TODO Tasks are having different priorities so that their outputs
         // don't overlap. Final solution is described in the
