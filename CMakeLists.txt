@@ -51,7 +51,7 @@ SdHostController_DeclareCAmkESComponent(
     SdHostController
 )
 
-DeclareCAmkESComponent_RPI_SPI_MSD (
+RPi_SPI_SD_DeclareCAmkESComponent (
     RPI_SPI_SD
     LIBS
         TimeServer_client
