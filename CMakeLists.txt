@@ -28,15 +28,15 @@ DeclareCAmkESComponent(
         os_libs
 )
 
-ChanMux_UART_DeclareCAmkESComponents(
-    ChanMux_UART
-    components/ChanMux/ChanMux_config.c
-    system_config
-)
+#ChanMux_UART_DeclareCAmkESComponents(
+#    ChanMux_UART
+#    components/ChanMux/ChanMux_config.c
+#    system_config
+#)
 
-Storage_ChanMux_DeclareCAmkESComponent(
-    Storage_ChanMux
-)
+#Storage_ChanMux_DeclareCAmkESComponent(
+#    Storage_ChanMux
+#)
 
 RamDisk_DeclareCAmkESComponent(
     RamDisk

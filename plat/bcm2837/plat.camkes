@@ -8,15 +8,15 @@ import <if_OS_Timer.camkes>;
 RPi_SPI_SD_COMPONENT_DEFINE(RPi_SPI_SD)
 RPi_SPI_SD_HW_COMPONENT_DEFINE(RPi_SPI_SD_HW)
 
-#include "RPI_SD/RPI_SD.camkes"
-DECLARE_COMPONENT_SYSTIMER_HW(SYSTIMER)
-DECLARE_COMPONENT_MAILBOX_HW(MAILBOX)
-DECLARE_COMPONENT_SDHOST_HW(SDHOST)
-DECLARE_COMPONENT_EMMC_HW(EMMC)
-DECLARE_COMPONENT_RPI_SD_DRV(RPI_SD)
+// #include "RPI_SD/RPI_SD.camkes"
+// DECLARE_COMPONENT_SYSTIMER_HW(SYSTIMER)
+// DECLARE_COMPONENT_MAILBOX_HW(MAILBOX)
+// DECLARE_COMPONENT_SDHOST_HW(SDHOST)
+// DECLARE_COMPONENT_EMMC_HW(EMMC)
+// DECLARE_COMPONENT_RPI_SD_DRV(RPI_SD)
 
 #include "TimeServer/camkes/TimeServer.camkes"
-DECLARE_COMPONENT_TimeServer(TimeServer)
+TimeServer_COMPONENT_DEFINE(TimeServer)
 
 assembly {
     composition {
@@ -24,7 +24,7 @@ assembly {
         // RPI SPI SD 
         //----------------------------------------------------------------------
         component RPi_SPI_SD spi_sd;
-        component RPi_SPI_SD spi_sd_hw;
+        component RPi_SPI_SD_HW spi_sd_hw;
         RPi_SPI_SD_INSTANCE_CONNECT(
             spi_sd,
             spi_sd_hw
@@ -32,10 +32,16 @@ assembly {
 
         component   StorageInterfaceTester tester_spi_sd;
 
-        DECLARE_AND_CONNECT_INSTANCE_StorageServer(
-            StorageServer, storageServer_rpi_spi_sd,
-            spi_sd.storage_rpc, spi_sd.storage_port,
-            tester_spi_sd.storage_rpc, tester_spi_sd.storage_port)
+        component   StorageServer   storageServerSPI_SD;
+
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSPI_SD,
+            spi_sd.storage_rpc, spi_sd.storage_port
+        )
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSPI_SD,
+            tester_spi_sd.storage_rpc, tester_spi_sd.storage_port
+        )
 
         //----------------------------------------------------------------------
         // integrated RPI SD
@@ -71,12 +77,21 @@ assembly {
         //----------------------------------------------------------------------
         // SPI SD storage server configuration
         //----------------------------------------------------------------------
-        CONFIGURE_INSTANCE_StorageServer(
-            storageServer_rpi_spi_sd,
-            SPI_SD_STORAGE_OFFSET, SPI_SD_STORAGE_SIZE)
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSPI_SD,
+            SPI_SD_STORAGE_OFFSET, SPI_SD_STORAGE_SIZE
+        )
+
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_spi_sd.storage_rpc
+        )
+
+        // CONFIGURE_INSTANCE_StorageServer(
+        //     storageServer_rpi_spi_sd,
+        //     SPI_SD_STORAGE_OFFSET, SPI_SD_STORAGE_SIZE)
  
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester_spi_sd, storage_rpc, 1)
+        // ASSIGN_CLIENT_BADGE_StorageServer(
+        //     tester_spi_sd, storage_rpc, 1)
         
         //----------------------------------------------------------------------
         // integrated SD storage server configuration 

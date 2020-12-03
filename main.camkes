@@ -49,14 +49,14 @@ assembly {
             storageServer,
             (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
             (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
+            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
+        )
 
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester_storageServer1, storage_rpc, STORAGESERVER_TESTER_IF1_ID)
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester_storageServer2, storage_rpc, STORAGESERVER_TESTER_IF2_ID)
-        ASSIGN_CLIENT_BADGE_StorageServer(
-            tester_storageServer3, storage_rpc, STORAGESERVER_TESTER_IF3_ID)
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_storageServer1.storage_rpc,
+            tester_storageServer2.storage_rpc,
+            tester_storageServer3.storage_rpc
+        )
 
         // TODO Tasks are having different priorities so that their outputs
         // don't overlap. Final solution is described in the
