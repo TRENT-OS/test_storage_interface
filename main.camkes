@@ -59,7 +59,8 @@ assembly {
             storageServer,
             (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
             (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ)
+            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
+        )
 
         StorageServer_CLIENT_ASSIGN_BADGES(
             tester_storageServer1.storage_rpc,
