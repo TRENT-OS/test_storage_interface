@@ -58,21 +58,21 @@ SdHostController_DeclareCAmkESComponent(
     SdHostController
 )
 
-RPi_SPI_SD_DeclareCAmkESComponent (
-    RPI_SPI_SD
-    LIBS
-        TimeServer_client
-)
-
-DeclareCAmkESComponent_RPI_SD_DRV (
-    RPI_SD
-    LIBS
-        TimeServer_client
-)
-
-DeclareCAmkESComponent_TimeServer(
+TimeServer_DeclareCAmkESComponent(
     TimeServer
 )
+
+RPi_SPI_SD_DeclareCAmkESComponent (
+    RPi_SPI_SD
+    LIBS
+        TimeServer_client
+)
+
+#DeclareCAmkESComponent_RPI_SD_DRV (
+#    RPI_SD
+#    LIBS
+#        TimeServer_client
+#)
 
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
 
