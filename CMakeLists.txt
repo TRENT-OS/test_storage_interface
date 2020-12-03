@@ -28,15 +28,15 @@ DeclareCAmkESComponent(
         os_libs
 )
 
-ChanMux_UART_DeclareCAmkESComponents(
-    ChanMux_UART
-    components/ChanMux/ChanMux_config.c
-    system_config
-)
+#ChanMux_UART_DeclareCAmkESComponents(
+#    ChanMux_UART
+#    components/ChanMux/ChanMux_config.c
+#    system_config
+#)
 
-Storage_ChanMux_DeclareCAmkESComponent(
-    Storage_ChanMux
-)
+#Storage_ChanMux_DeclareCAmkESComponent(
+#    Storage_ChanMux
+#)
 
 RamDisk_DeclareCAmkESComponent(
     RamDisk
@@ -49,6 +49,16 @@ StorageServer_DeclareCAmkESComponent(
 
 SdHostController_DeclareCAmkESComponent(
     SdHostController
+)
+
+TimeServer_DeclareCAmkESComponent(
+    TimeServer
+)
+
+RPi_SPI_Flash_DeclareCAmkESComponent(
+    RPi_SPI_Flash
+    LIBS
+        TimeServer_client
 )
 
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")

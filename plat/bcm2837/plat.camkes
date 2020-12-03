@@ -1,0 +1,70 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+
+#include "RPi_SPI_Flash/RPi_SPI_Flash.camkes"
+RPi_SPI_Flash_COMPONENT_DEFINE(RPi_SPI_Flash)
+RPi_SPI_Flash_HW_COMPONENT_DEFINE(RPi_SPI_Flash_HW)
+
+assembly {
+    composition {
+
+        component   StorageInterfaceTester tester_flash;
+
+        //----------------------------------------------------------------------
+        // FLASH
+        //----------------------------------------------------------------------
+        component   RPi_SPI_Flash       flash;
+        component   RPi_SPI_Flash_HW    flash_hw;
+
+        RPi_SPI_Flash_INSTANCE_CONNECT(
+            flash,
+            flash_hw
+        )
+
+
+        // StorageServer
+        component   StorageServer   storageServerFlash;
+        StorageServer_INSTANCE_CONNECT(
+            storageServerFlash,
+            flash.storage_rpc, flash.storage_port
+        )
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerFlash,
+            tester_flash.storage_rpc, tester_flash.storage_port
+        )
+
+                //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        component TimeServer timeServer;
+
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            flash.timeServer_rpc,           flash.timeServer_notify
+        )
+
+    }
+
+    configuration {
+
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerFlash,
+            TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
+        )
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_flash.storage_rpc
+        )
+
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            flash.timeServer_rpc
+        )
+
+        RPi_SPI_Flash_HW_INSTANCE_CONFIGURE_SELF(
+            flash_hw
+        )
+
+        tester_flash._priority = 110;
+    }
+}
