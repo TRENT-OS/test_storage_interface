@@ -36,6 +36,7 @@ assembly {
             storageServer,
             storageServerStorage.storage_rpc, storageServerStorage.storage_port
         )
+
         StorageServer_INSTANCE_CONNECT_CLIENTS(
             storageServer,
             tester_storageServer1.storage_rpc, tester_storageServer1.storage_port,

@@ -1,0 +1,146 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+import <std_connector.camkes>;
+
+import <if_OS_Timer.camkes>;
+
+#include "RPi_SPI_SD/RPi_SPI_SD.camkes"
+RPi_SPI_SD_COMPONENT_DEFINE(RPi_SPI_SD)
+RPi_SPI_SD_HW_COMPONENT_DEFINE(RPi_SPI_SD_HW)
+
+#include "RPI_SD/RPI_SD.camkes"
+DECLARE_COMPONENT_SYSTIMER_HW(SYSTIMER)
+DECLARE_COMPONENT_MAILBOX_HW(MAILBOX)
+DECLARE_COMPONENT_SDHOST_HW(SDHOST)
+DECLARE_COMPONENT_EMMC_HW(EMMC)
+DECLARE_COMPONENT_RPI_SD_DRV(RPI_SD)
+
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+
+assembly {
+    composition {
+        //----------------------------------------------------------------------
+        // RPI SPI SD 
+        //----------------------------------------------------------------------
+        component RPi_SPI_SD spi_sd;
+        component RPi_SPI_SD_HW spi_sd_hw;
+        RPi_SPI_SD_INSTANCE_CONNECT(
+            spi_sd,
+            spi_sd_hw
+        )
+
+        component   StorageInterfaceTester tester_spi_sd;
+
+        component   StorageServer   storageServerSPI_SD;
+
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSPI_SD,
+            spi_sd.storage_rpc, spi_sd.storage_port
+        )
+
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSPI_SD,
+            tester_spi_sd.storage_rpc, tester_spi_sd.storage_port
+        )
+
+        //----------------------------------------------------------------------
+        // integrated RPI SD
+        //----------------------------------------------------------------------
+        DECLARE_AND_CONNECT_INSTANCE_SD_DRV_HW(
+            MAILBOX, mailbox, 
+            SDHOST, sdhost, 
+            EMMC, emmc,
+            SYSTIMER, systimer,
+            RPI_SD, sd
+        )
+
+        component   StorageInterfaceTester tester_sd;
+
+        component   StorageServer   storageServerSD;
+
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSD,
+            sd.storage_rpc, sd.storage_port
+        )
+
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSD,
+            tester_sd.storage_rpc, tester_sd.storage_port
+        )
+        // DECLARE_AND_CONNECT_INSTANCE_StorageServer(
+        //     StorageServer, storageServer_rpi_sd,
+        //     sd.storage_rpc, sd.storage_port,
+        //     tester_sd.storage_rpc, tester_sd.storage_port)
+ 
+        //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        component TimeServer timeServer;
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            spi_sd.timeServer_rpc,spi_sd.timeServer_notify,
+            sd.timeServer_rpc,sd.timeServer_notify
+        )
+
+    }
+
+    configuration {
+        //----------------------------------------------------------------------
+        // SPI SD storage server configuration
+        //----------------------------------------------------------------------
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSPI_SD,
+            SPI_SD_STORAGE_OFFSET, SPI_SD_STORAGE_SIZE
+        )
+
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_spi_sd.storage_rpc
+        )
+
+        //----------------------------------------------------------------------
+        // integrated SD storage server configuration 
+        //----------------------------------------------------------------------
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSD,
+            SD_STORAGE_OFFSET, SD_STORAGE_SIZE
+        )
+
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_sd.storage_rpc
+        )
+
+        //----------------------------------------------------------------------
+        // SPI SD configuration
+        //----------------------------------------------------------------------
+        RPi_SPI_SD_HW_INSTANCE_CONFIGURE_SELF(spi_sd_hw)
+
+        //----------------------------------------------------------------------
+        // integrated SD configuration 
+        //----------------------------------------------------------------------
+        CONFIGURE_INSTANCE_SYSTIMER_HW(systimer, 0xFE003000, 0x1000)
+        
+        CONFIGURE_INSTANCE_MAILBOX_HW(mailbox, 0xFE00B000, 0x1000)
+        
+        CONFIGURE_INSTANCE_SDHOST_HW(sdhost, 0xFE202000, 0x1000, 152)
+        
+        // CONFIGURE_INSTANCE_EMMC_HW(emmc, 0xFE300000, 0x1000, 158)
+        CONFIGURE_INSTANCE_EMMC_HW(emmc, 0xFE340000, 0x1000, 158)
+        
+        CONFIGURE_INSTANCE_SD_DRV(sd, 4*40960)
+
+        //----------------------------------------------------------------------
+        // TimeServer assign badge
+        //----------------------------------------------------------------------
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            spi_sd.timeServer_rpc,
+            sd.timeServer_rpc
+        )
+
+        //----------------------------------------------------------------------
+        // tester priorities
+        //----------------------------------------------------------------------
+        tester_spi_sd._priority     = 110;
+        tester_sd._priority         = 105; 
+    }
+}
