@@ -9,7 +9,6 @@
 int run()
 {
     uint32_t stateBitmap = 0;
-
     if (!strcmp(get_instance_name(), "tester_sdhc") &&
         storage_rpc_getState(&stateBitmap) == OS_ERROR_DEVICE_NOT_PRESENT)
     {
