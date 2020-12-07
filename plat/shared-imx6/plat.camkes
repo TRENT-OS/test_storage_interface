@@ -4,10 +4,6 @@
 SdHostController_COMPONENT_DEFINE(SdHostController);
 SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
 
-#ifndef SDIO_PORT
-#error "Please specify the desired SDIO port."
-#endif
-
 assembly {
     composition {
 
@@ -43,35 +39,9 @@ assembly {
             tester_sdhc.storage_rpc
         )
 
-#if (SDIO_PORT == 1)
-        SdHostController_HW_INSTANCE_CONFIGURE(
-            sdhcHw, 1
-        )
-        SdHostController_INSTANCE_CONFIGURE(
-            sdhc, 1
-        )
-#elif (SDIO_PORT == 2)
-        SdHostController_HW_INSTANCE_CONFIGURE(
-            sdhcHw, 2
-        )
-        SdHostController_INSTANCE_CONFIGURE(
-            sdhc, 2
-        )
-#elif (SDIO_PORT == 3)
-        SdHostController_HW_INSTANCE_CONFIGURE(
-            sdhcHw, 3
-        )
-        SdHostController_INSTANCE_CONFIGURE(
-            sdhc, 3
-        )
-#elif (SDIO_PORT == 4)
-        SdHostController_HW_INSTANCE_CONFIGURE(
-            sdhcHw, 4
-        )
-        SdHostController_INSTANCE_CONFIGURE(
-            sdhc, 4
-        )
-#endif
+        // Use the platform specific default settings
+        SdHostController_INSTANCE_CONFIGURE(sdhc)
+        SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
 
         tester_sdhc._priority = 110;
     }
