@@ -68,11 +68,11 @@ RPi_SPI_SD_DeclareCAmkESComponent (
         TimeServer_client
 )
 
-#DeclareCAmkESComponent_RPI_SD_DRV (
-#    RPI_SD
-#    LIBS
-#        TimeServer_client
-#)
+DeclareCAmkESComponent_RPI_SD_DRV (
+    RPI_SD
+    LIBS
+        TimeServer_client
+)
 
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
 
