@@ -30,7 +30,7 @@ DeclareCAmkESComponent(
     LIBS
         system_config
         os_core_api
-        os_libs
+        lib_debug
 )
 
 ChanMux_UART_DeclareCAmkESComponents(

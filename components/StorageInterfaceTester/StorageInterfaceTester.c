@@ -1,6 +1,6 @@
 /* Copyright (C) 2020, HENSOLDT Cyber GmbH */
 #include "test_storage.h"
-#include "LibDebug/Debug.h"
+#include "lib_debug/Debug.h"
 
 #include <camkes.h>
 
