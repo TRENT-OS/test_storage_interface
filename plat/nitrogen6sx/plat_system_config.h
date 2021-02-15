@@ -25,8 +25,4 @@
 #define TESTAPP_STORAGE_OFFSET  (BOOT_STORAGE_OFFSET + BOOT_STORAGE_SIZE)
 #define TESTAPP_STORAGE_SIZE    (128 * MiB)
 
-// SDHC2 port is used in case of this platform i.e. the slot with the micro
-// SD card connector.
-#define SDIO_PORT   2
-
 #include "../shared-imx6/plat.camkes"
