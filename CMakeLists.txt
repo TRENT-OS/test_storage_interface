@@ -68,6 +68,12 @@ RPi_SPI_SD_DeclareCAmkESComponent (
         TimeServer_client
 )
 
+RPi_SD_DeclareCAmkESComponent (
+    RPi_SD
+    LIBS
+        TimeServer_client
+)
+
 CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
 
 DeclareCAmkESComponent_SysLogger(
