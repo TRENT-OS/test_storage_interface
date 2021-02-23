@@ -1,0 +1,81 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+import <std_connector.camkes>;
+
+import <if_OS_Timer.camkes>;
+
+#include "RPi_SPI_SD/RPi_SPI_SD.camkes"
+RPi_SPI_SD_COMPONENT_DEFINE(RPi_SPI_SD)
+RPi_SPI_SD_HW_COMPONENT_DEFINE(RPi_SPI_SD_HW)
+
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+
+assembly {
+    composition {
+        //----------------------------------------------------------------------
+        // RPI SPI SD 
+        //----------------------------------------------------------------------
+        component RPi_SPI_SD spi_sd;
+        component RPi_SPI_SD_HW spi_sd_hw;
+        RPi_SPI_SD_INSTANCE_CONNECT(
+            spi_sd,
+            spi_sd_hw
+        )
+
+        component   StorageInterfaceTester tester_spi_sd;
+
+        component   StorageServer   storageServerSPI_SD;
+
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSPI_SD,
+            spi_sd.storage_rpc, spi_sd.storage_port
+        )
+
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSPI_SD,
+            tester_spi_sd.storage_rpc, tester_spi_sd.storage_port
+        )
+
+        //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        component TimeServer timeServer;
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            spi_sd.timeServer_rpc,spi_sd.timeServer_notify
+        )
+
+    }
+
+    configuration {
+        //----------------------------------------------------------------------
+        // SPI SD storage server configuration
+        //----------------------------------------------------------------------
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSPI_SD,
+            SPI_SD_STORAGE_OFFSET, SPI_SD_STORAGE_SIZE
+        )
+
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_spi_sd.storage_rpc
+        )
+
+        //----------------------------------------------------------------------
+        // SPI SD configuration
+        //----------------------------------------------------------------------
+        RPi_SPI_SD_HW_INSTANCE_CONFIGURE_SELF(spi_sd_hw)
+
+        //----------------------------------------------------------------------
+        // TimeServer assign badge
+        //----------------------------------------------------------------------
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            spi_sd.timeServer_rpc
+        )
+
+        //----------------------------------------------------------------------
+        // tester priorities
+        //----------------------------------------------------------------------
+        tester_spi_sd._priority     = 110;
+    }
+}
