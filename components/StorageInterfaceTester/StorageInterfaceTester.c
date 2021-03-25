@@ -1,4 +1,9 @@
-/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+/*
+ * Storage interface tester
+ *
+ * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
+ *
+ */
 #include "test_storage.h"
 #include "lib_debug/Debug.h"
 

@@ -1,4 +1,9 @@
-/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+/*
+ * Platform related CAmKES files
+ *
+ * Copyright (C) 2020-2021, HENSOLDT Cyber GmbH
+ *
+ */
 
 #include "SdHostController/SdHostController.camkes"
 SdHostController_COMPONENT_DEFINE(SdHostController);
