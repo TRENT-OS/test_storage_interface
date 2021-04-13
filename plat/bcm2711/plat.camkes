@@ -1,0 +1,52 @@
+/* Copyright (C) 2020, HENSOLDT Cyber GmbH */
+
+#include "syslog.camkes"
+#include "SdHostController/SdHostController.camkes"
+SdHostController_COMPONENT_DEFINE(SdHostController);
+SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
+
+assembly {
+    composition {
+
+        component   StorageInterfaceTester tester_sdhc;
+
+        // SDHC
+        component   SdHostController_HW     sdhcHw;
+        component   SdHostController        sdhc;
+        SdHostController_INSTANCE_CONNECT(
+            sdhc, sdhcHw
+        )
+
+        // StorageServer
+        component   StorageServer   storageServerSd;
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSd,
+            sdhc.storage_rpc, sdhc.storage_port
+        )
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSd,
+            tester_sdhc.storage_rpc, tester_sdhc.storage_port
+        )
+        SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
+
+    }
+
+    configuration {
+
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSd,
+            TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
+        )
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_sdhc.storage_rpc
+        )
+
+        // Use the platform specific default settings
+        SdHostController_INSTANCE_CONFIGURE(sdhc)
+        SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
+
+        CONFIGURE_INSTANCE_SD_DRV(sdhc, 4*40960)
+
+        tester_sdhc._priority = 110;
+    }
+}
