@@ -30,6 +30,7 @@ DeclareCAmkESComponent(
     LIBS
         system_config
         os_core_api
+        lib_compiler
         lib_debug
         syslogger_client
 )
