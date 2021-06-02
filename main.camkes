@@ -102,5 +102,18 @@ assembly {
         ChanMux_UART_CLIENT_ASSIGN_BADGES(
             chanMuxStorage.chanMux_Rpc
         )
+        // Set drivers's priority to low so that printf() collisions with
+        // application layer are avoided. This is a temporary workaround.
+        // The application layer components have already synchronized printf()
+        // as they use SysLogger but it should be the same for the following
+        // components here below (those to which we are setting a lower
+        // priority).
+        // Furthermore this workaround by itself it is not sufficient to avoid
+        // collisions. The log level needs to be adjusted too (INFO level, not
+        // more verbose).
+        ramDisk._priority               = 1;
+        storageServer._priority         = 1;
+        storageServerStorage._priority  = 1;
+        chanMuxStorage._priority        = 1;
     }
 }
