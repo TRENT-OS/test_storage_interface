@@ -4,6 +4,8 @@ import <std_connector.camkes>;
 
 import <if_OS_Timer.camkes>;
 
+#include "syslog.camkes"
+
 #include "RPi_SPI_SD/RPi_SPI_SD.camkes"
 RPi_SPI_SD_COMPONENT_DEFINE(RPi_SPI_SD)
 RPi_SPI_SD_HW_COMPONENT_DEFINE(RPi_SPI_SD_HW)
@@ -79,6 +81,11 @@ assembly {
             sd.timeServer_rpc,sd.timeServer_notify
         )
 
+        SysLogger_INSTANCE_CONNECT_CLIENTS(
+            sysLogger,
+            tester_spi_sd,
+            tester_sd
+        )
     }
 
     configuration {

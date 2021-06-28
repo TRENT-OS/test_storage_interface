@@ -48,7 +48,6 @@ assembly {
         SysLogger_INSTANCE_CONNECT_CLIENTS(
                 sysLogger,
                 tester_ramDisk,
-                tester_chanMux,
                 tester_storageServer1,
                 tester_storageServer2,
                 tester_storageServer3
