@@ -20,17 +20,43 @@ StorageServer_COMPONENT_DEFINE(StorageServer)
 assembly {
     composition {
 
+#if defined(UART_CHANMUX)
+
+        component ChanMux_UART chanMux_UART;
+        component UART_CHANMUX uart;
+        component Storage_ChanMux chanMuxStorage;
+        component StorageInterfaceTester tester_chanMux;
+
+        ChanMux_UART_INSTANCE_CONNECT(
+            chanMux_UART,
+            uart
+        )
+        ChanMux_UART_INSTANCE_CONNECT_CLIENT(
+            chanMux_UART,
+            chanMuxStorage, chan
+        )
+
+#endif // defined(UART_CHANMUX)
+
         // RamDisk
         component   RamDisk ramDisk;
 
         // Testers
         component   StorageInterfaceTester tester_ramDisk;
+
         component   StorageInterfaceTester tester_storageServer1;
         component   StorageInterfaceTester tester_storageServer2;
         component   StorageInterfaceTester tester_storageServer3;
 
         connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
         connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
+
+#if defined(UART_CHANMUX)
+        Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
+            chanMuxStorage,
+            tester_chanMux.storage_rpc, tester_chanMux.storage_port
+        )
+#endif // defined(UART_CHANMUX)
 
         // Storage Server
         component   RamDisk             storageServerStorage;
@@ -49,6 +75,9 @@ assembly {
         SysLogger_INSTANCE_CONNECT_CLIENTS(
                 sysLogger,
                 tester_ramDisk,
+#if defined(UART_CHANMUX)
+                tester_chanMux,
+#endif // defined(UART_CHANMUX)
                 tester_storageServer1,
                 tester_storageServer2,
                 tester_storageServer3
