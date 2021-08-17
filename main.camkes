@@ -6,15 +6,6 @@ import "components/StorageInterfaceTester/StorageInterfaceTester.camkes";
 
 #include "system_config.h"
 
-#include "ChanMux/ChanMux_UART.camkes"
-ChanMux_UART_COMPONENT_DEFINE(
-    ChanMux_UART,
-    chanMuxStorage, chan
-)
-
-#include "Storage_ChanMux/Storage_ChanMux.camkes"
-Storage_ChanMux_COMPONENT_DEFINE(Storage_ChanMux)
-
 #include "RamDisk/RamDisk.camkes"
 RamDisk_COMPONENT_DEFINE(RamDisk)
 
@@ -27,38 +18,17 @@ StorageServer_COMPONENT_DEFINE(StorageServer)
 assembly {
     composition {
 
-        // ChanMux_UART + UART
-        component ChanMux_UART chanMux_UART;
-        component UART_CHANMUX uart;
-        // Storage_ChanMux
-        component   Storage_ChanMux chanMuxStorage;
-
-        ChanMux_UART_INSTANCE_CONNECT(
-            chanMux_UART,
-            uart
-        )
-        ChanMux_UART_INSTANCE_CONNECT_CLIENT(
-            chanMux_UART,
-            chanMuxStorage, chan
-        )
-
         // RamDisk
         component   RamDisk ramDisk;
 
         // Testers
         component   StorageInterfaceTester tester_ramDisk;
-        component   StorageInterfaceTester tester_chanMux;
         component   StorageInterfaceTester tester_storageServer1;
         component   StorageInterfaceTester tester_storageServer2;
         component   StorageInterfaceTester tester_storageServer3;
 
         connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
         connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
-
-        Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
-            chanMuxStorage,
-            tester_chanMux.storage_rpc, tester_chanMux.storage_port
-        )
 
         // Storage Server
         component   RamDisk             storageServerStorage;
@@ -74,11 +44,9 @@ assembly {
             tester_storageServer2.storage_rpc, tester_storageServer2.storage_port,
             tester_storageServer3.storage_rpc, tester_storageServer3.storage_port
         )
-
         SysLogger_INSTANCE_CONNECT_CLIENTS(
                 sysLogger,
                 tester_ramDisk,
-                tester_chanMux,
                 tester_storageServer1,
                 tester_storageServer2,
                 tester_storageServer3
@@ -99,9 +67,6 @@ assembly {
             tester_storageServer3.storage_rpc
         )
 
-        ChanMux_UART_CLIENT_ASSIGN_BADGES(
-            chanMuxStorage.chanMux_Rpc
-        )
         // Set drivers's priority to low so that printf() collisions with
         // application layer are avoided. This is a temporary workaround.
         // The application layer components have already synchronized printf()
@@ -114,6 +79,5 @@ assembly {
         ramDisk._priority               = 1;
         storageServer._priority         = 1;
         storageServerStorage._priority  = 1;
-        chanMuxStorage._priority        = 1;
     }
 }
