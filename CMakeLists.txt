@@ -35,6 +35,7 @@ DeclareCAmkESComponent(
         syslogger_client
 )
 
+if(NOT (${PLATFORM} STREQUAL "rpi3"))
 ChanMux_UART_DeclareCAmkESComponents(
     ChanMux_UART
     components/ChanMux/ChanMux_config.c
@@ -44,6 +45,7 @@ ChanMux_UART_DeclareCAmkESComponents(
 Storage_ChanMux_DeclareCAmkESComponent(
     Storage_ChanMux
 )
+endif()
 
 RamDisk_DeclareCAmkESComponent(
     RamDisk
