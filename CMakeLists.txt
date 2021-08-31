@@ -35,18 +35,6 @@ DeclareCAmkESComponent(
         syslogger_client
 )
 
-if(NOT (${PLATFORM} STREQUAL "rpi3"))
-ChanMux_UART_DeclareCAmkESComponents(
-    ChanMux_UART
-    components/ChanMux/ChanMux_config.c
-    system_config
-)
-
-Storage_ChanMux_DeclareCAmkESComponent(
-    Storage_ChanMux
-)
-endif()
-
 RamDisk_DeclareCAmkESComponent(
     RamDisk
     system_config
@@ -60,12 +48,14 @@ SdHostController_DeclareCAmkESComponent(
     SdHostController
 )
 
-CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${KernelPlatform}")
-
 DeclareCAmkESComponent_SysLogger(
     SysLogger
     system_config
 )
+
+include("${CMAKE_CURRENT_LIST_DIR}/plat/${PLATFORM}/plat.cmake")
+
+CAmkESAddCPPInclude("${CMAKE_CURRENT_LIST_DIR}/plat/${PLATFORM}")
 
 #ROOT SERVER
 DeclareAndCreateCamkESSystem(main.camkes)
