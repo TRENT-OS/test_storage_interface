@@ -12,7 +12,7 @@ RamDisk_COMPONENT_DEFINE(RamDisk)
 #include "StorageServer/camkes/StorageServer.camkes"
 StorageServer_COMPONENT_DEFINE(StorageServer)
 
-#include "plat_system_config.h"
+#include "plat.camkes"
 #include "syslog.camkes"
 
 assembly {
