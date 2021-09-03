@@ -11,7 +11,7 @@
 // three times bigger than the TEST_DATA_SZ (see test_storage_size_pos()).
 //------------------------------------------------------------------------------
 // 1 MiB
-#define TESTAPP_STORAGE_OFFSET      0
+#define TESTAPP_STORAGE_OFFSET      (8*1024*1024) // ToDo: find sensible offset
 #define TESTAPP_STORAGE_SIZE        (1*1024*1024)
 
 //------------------------------------------------------------------------------
