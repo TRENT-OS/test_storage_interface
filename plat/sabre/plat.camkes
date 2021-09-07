@@ -11,7 +11,13 @@
 // three times bigger than the TEST_DATA_SZ (see test_storage_size_pos()).
 //------------------------------------------------------------------------------
 // 1 MiB
-#define TESTAPP_STORAGE_OFFSET      (8*1024*1024) // ToDo: find sensible offset
+// ToDo: We still have to find a sensible offset for the Sabre board. If the
+//       offset is 0, then the test_storage_interface application will overwrite
+//       also memory regions on the SD card that hold necessary boot files. As a
+//       result, for every new run, it is necessary to format the SD card again.
+//       This behavior makes an offset necessary, but using a simple offset
+//       causes problems in CI since the QEMU platform uses a 1MiB SD card.
+#define TESTAPP_STORAGE_OFFSET      0
 #define TESTAPP_STORAGE_SIZE        (1*1024*1024)
 
 //------------------------------------------------------------------------------
