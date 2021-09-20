@@ -1,0 +1,77 @@
+/* Copyright (C) 2021, HENSOLDT Cyber GmbH */
+#pragma once
+
+//------------------------------------------------------------------------------
+// StorageServer Configuration
+//
+// Depending on the platform we want to write to the SD Card at a different
+// offset, which is done with the help of the StorageServer.
+//
+// Note that TESTAPP_STORAGE_SIZE is chosen arbitrarily as it must be at least
+// three times bigger than the TEST_DATA_SZ (see test_storage_size_pos()).
+//------------------------------------------------------------------------------
+#define MiB                     (1024 * 1024)
+
+// Reserved for GPT
+#define GPT_STORAGE_SIZE        (1 * MiB)
+
+#define BOOT_STORAGE_OFFSET     GPT_STORAGE_SIZE
+#define BOOT_STORAGE_SIZE       (128 * MiB)
+
+#define TESTAPP_STORAGE_OFFSET  (BOOT_STORAGE_OFFSET + BOOT_STORAGE_SIZE)
+#define TESTAPP_STORAGE_SIZE    (128 * MiB)
+
+//------------------------------------------------------------------------------
+// Platform related CAmkES definitions
+//------------------------------------------------------------------------------
+
+#include "syslog.camkes"
+#include "SdHostController/SdHostController.camkes"
+SdHostController_COMPONENT_DEFINE(SdHostController);
+SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
+
+assembly {
+    composition {
+
+        component   StorageInterfaceTester tester_sdhc;
+
+        // SDHC
+        component   SdHostController_HW     sdhcHw;
+        component   SdHostController        sdhc;
+        SdHostController_INSTANCE_CONNECT(
+            sdhc, sdhcHw
+        )
+
+        // StorageServer
+        component   StorageServer   storageServerSd;
+        StorageServer_INSTANCE_CONNECT(
+            storageServerSd,
+            sdhc.storage_rpc, sdhc.storage_port
+        )
+        StorageServer_INSTANCE_CONNECT_CLIENTS(
+            storageServerSd,
+            tester_sdhc.storage_rpc, tester_sdhc.storage_port
+        )
+        SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
+
+    }
+
+    configuration {
+
+        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+            storageServerSd,
+            TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
+        )
+        StorageServer_CLIENT_ASSIGN_BADGES(
+            tester_sdhc.storage_rpc
+        )
+
+        // Use the platform specific default settings
+        SdHostController_INSTANCE_CONFIGURE(sdhc)
+        SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
+
+        CONFIGURE_INSTANCE_SD_DRV(sdhc, 4*40960)
+
+        tester_sdhc._priority = 110;
+    }
+}
