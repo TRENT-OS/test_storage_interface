@@ -113,7 +113,7 @@ roundDownToBLockSize(
     if(OS_ERROR_NOT_IMPLEMENTED == rslt) \
     { \
         /* Erase functionality is considered optional. */ \
-        ASSERT_EQ_INT_MAX(0LL, bytesErased); \
+        ASSERT_EQ_INT_MAX((intmax_t)0, bytesErased); \
 \
         Debug_LOG_WARNING( \
             "Erase function is not implemented for %s. Was it intended?", \
@@ -183,7 +183,7 @@ test_storage_blockSize_pos()
 
     // Different storages have different block sizes, but nevertheless the block
     // size must always be greater than 0.
-    ASSERT_LT_SZ(0U, storageBlockSize);
+    ASSERT_LT_SZ((size_t)0U, storageBlockSize);
 
     TEST_FINISH();
 }
@@ -260,7 +260,7 @@ test_storage_writeReadEraseZeroBytes_pos()
         TEST_SUCCESS(rslt);
     }
 
-    ASSERT_EQ_INT_MAX(0LL, bytesErased);
+    ASSERT_EQ_INT_MAX((intmax_t)0, bytesErased);
 
     TEST_FINISH();
 }
@@ -389,7 +389,7 @@ test_storage_neighborRegionsUntouched_pos()
     TEST_NOT_SUCCESS( \
         storage_rpc_write(offset, roundedDownSize, &bytesWritten)); \
 \
-    ASSERT_EQ_SZ(0U, bytesWritten); \
+    ASSERT_EQ_SZ((size_t)0U, bytesWritten); \
 } while (0)
 
 #define TEST_READ_NEG(offset, size) do \
@@ -407,7 +407,7 @@ test_storage_neighborRegionsUntouched_pos()
     TEST_NOT_SUCCESS( \
         storage_rpc_read(offset, roundedDownSize, &bytesRead)); \
 \
-    ASSERT_EQ_SZ(0U, bytesRead); \
+    ASSERT_EQ_SZ((size_t)0U, bytesRead); \
 } while (0)
 
 #define TEST_ERASE_NEG(offset, size) do \
@@ -425,7 +425,7 @@ test_storage_neighborRegionsUntouched_pos()
             roundDownToBLockSize(size), \
             &bytesErased)); \
 \
-    ASSERT_EQ_INT_MAX(0LL, bytesErased); \
+    ASSERT_EQ_INT_MAX((intmax_t)0, bytesErased); \
 } while (0)
 
 #define TEST_WRITE_READ_ERASE_NEG(offset, size) do \
