@@ -11,6 +11,7 @@
 // three times bigger than the TEST_DATA_SZ (see test_storage_size_pos()).
 //------------------------------------------------------------------------------
 #define MiB                     (1024 * 1024)
+#define PAGE_SIZE               4096
 
 // Reserved for GPT
 #define GPT_STORAGE_SIZE        (1 * MiB)
@@ -70,7 +71,7 @@ assembly {
         SdHostController_INSTANCE_CONFIGURE(sdhc)
         SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
 
-        CONFIGURE_INSTANCE_SD_DRV(sdhc, 4*40960)
+        CONFIGURE_INSTANCE_SD_DRV(sdhc, PAGE_SIZE)
 
         tester_sdhc._priority = 110;
     }
