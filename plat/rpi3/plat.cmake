@@ -1,3 +1,3 @@
-# Copyright (C) 2021, Hensoldt Cyber GmbH
+# Copyright (C) 2021, HENSOLDT Cyber GmbH
 
 # nothing to do here
