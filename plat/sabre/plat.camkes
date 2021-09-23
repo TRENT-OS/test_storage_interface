@@ -17,7 +17,7 @@
 //       result, for every new run, it is necessary to format the SD card again.
 //       This behavior makes an offset necessary, but using a simple offset
 //       causes problems in CI since the QEMU platform uses a 1MiB SD card.
-#define TESTAPP_STORAGE_OFFSET      0
+#define TESTAPP_STORAGE_OFFSET      (8*1024*1024)
 #define TESTAPP_STORAGE_SIZE        (1*1024*1024)
 
 //------------------------------------------------------------------------------
