@@ -32,25 +32,27 @@ int run()
     }
     else
     {
-        test_storage_size_pos();
-        test_storage_blockSize_pos();
-        test_storage_state_pos();
+        // test_storage_size_pos();
+        // test_storage_blockSize_pos();
+        // test_storage_state_pos();
 
-        test_storage_writeReadEraseBegin_pos();
-        test_storage_writeReadEraseMid_pos();
-        test_storage_writeReadEraseEnd_pos();
-        test_storage_writeReadEraseZeroBytes_pos();
-        test_storage_neighborRegionsUntouched_pos();
+        // test_storage_writeReadEraseBegin_pos();
+        // test_storage_writeReadEraseMid_pos();
+        // test_storage_writeReadEraseEnd_pos();
+        // test_storage_writeReadEraseZeroBytes_pos();
+        // test_storage_neighborRegionsUntouched_pos();
 
-        // test_storage_writeReadEraseLargerThanBuf_neg();
+        // // test_storage_writeReadEraseLargerThanBuf_neg();
 
-        test_storage_writeReadEraseOutside_neg();
-        test_storage_writeReadEraseNegOffset_neg();
-        test_storage_writeReadEraseIntMax_neg();
-        test_storage_writeReadEraseIntMin_neg();
+        // test_storage_writeReadEraseOutside_neg();
+        // test_storage_writeReadEraseNegOffset_neg();
+        // test_storage_writeReadEraseIntMax_neg();
+        // test_storage_writeReadEraseIntMin_neg();
 
-        test_storage_writeReadEraseSizeTooLarge_neg();
-        test_storage_writeReadEraseSizeMax_neg();
+        // test_storage_writeReadEraseSizeTooLarge_neg();
+        // test_storage_writeReadEraseSizeMax_neg();
+
+        test_performance();
     }
 
     Debug_LOG_INFO(

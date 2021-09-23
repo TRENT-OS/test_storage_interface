@@ -31,6 +31,9 @@
 SdHostController_COMPONENT_DEFINE(SdHostController);
 SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
 
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+
 assembly {
     composition {
 
@@ -55,6 +58,15 @@ assembly {
         )
         SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
 
+        //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        component TimeServer timeServer;
+
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            tester_sdhc.timeServer_rpc,   tester_sdhc.timeServer_notify
+        )
     }
 
     configuration {
@@ -65,6 +77,10 @@ assembly {
         )
         StorageServer_CLIENT_ASSIGN_BADGES(
             tester_sdhc.storage_rpc
+        )
+
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            tester_sdhc.timeServer_rpc
         )
 
         // Use the platform specific default settings

@@ -33,6 +33,7 @@ DeclareCAmkESComponent(
         lib_compiler
         lib_debug
         syslogger_client
+        TimeServer_client
 )
 
 RamDisk_DeclareCAmkESComponent(
@@ -51,6 +52,10 @@ SdHostController_DeclareCAmkESComponent(
 DeclareCAmkESComponent_SysLogger(
     SysLogger
     system_config
+)
+
+TimeServer_DeclareCAmkESComponent(
+    TimeServer
 )
 
 include("${CMAKE_CURRENT_LIST_DIR}/plat/${PLATFORM}/plat.cmake")

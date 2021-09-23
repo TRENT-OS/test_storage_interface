@@ -15,69 +15,70 @@ StorageServer_COMPONENT_DEFINE(StorageServer)
 #include "plat.camkes"
 #include "syslog.camkes"
 
-assembly {
-    composition {
+// assembly {
+//     composition {
 
-        // RamDisk
-        component   RamDisk ramDisk;
+//         // RamDisk
+//         component   RamDisk ramDisk;
 
-        // Testers
-        component   StorageInterfaceTester tester_ramDisk;
-        component   StorageInterfaceTester tester_storageServer1;
-        component   StorageInterfaceTester tester_storageServer2;
-        component   StorageInterfaceTester tester_storageServer3;
+//         // Testers
+//         component   StorageInterfaceTester tester_ramDisk;
+//         component   StorageInterfaceTester tester_storageServer1;
+//         component   StorageInterfaceTester tester_storageServer2;
+//         component   StorageInterfaceTester tester_storageServer3;
 
-        connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
-        connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
+//         connection  seL4RPCCall         tester_ramDisk_rpc         (from tester_ramDisk.storage_rpc,  to ramDisk.storage_rpc);
+//         connection  seL4SharedData      tester_ramDisk_port        (from tester_ramDisk.storage_port, to ramDisk.storage_port);
 
-        // Storage Server
-        component   RamDisk             storageServerStorage;
-        component   StorageServer       storageServer;
+//         // Storage Server
+//         component   RamDisk             storageServerStorage;
+//         component   StorageServer       storageServer;
 
-        StorageServer_INSTANCE_CONNECT(
-            storageServer,
-            storageServerStorage.storage_rpc, storageServerStorage.storage_port
-        )
-        StorageServer_INSTANCE_CONNECT_CLIENTS(
-            storageServer,
-            tester_storageServer1.storage_rpc, tester_storageServer1.storage_port,
-            tester_storageServer2.storage_rpc, tester_storageServer2.storage_port,
-            tester_storageServer3.storage_rpc, tester_storageServer3.storage_port
-        )
-        SysLogger_INSTANCE_CONNECT_CLIENTS(
-                sysLogger,
-                tester_ramDisk,
-                tester_storageServer1,
-                tester_storageServer2,
-                tester_storageServer3
-        )
-    }
+//         StorageServer_INSTANCE_CONNECT(
+//             storageServer,
+//             storageServerStorage.storage_rpc, storageServerStorage.storage_port
+//         )
+//         StorageServer_INSTANCE_CONNECT_CLIENTS(
+//             storageServer,
+//             tester_storageServer1.storage_rpc, tester_storageServer1.storage_port,
+//             tester_storageServer2.storage_rpc, tester_storageServer2.storage_port,
+//             tester_storageServer3.storage_rpc, tester_storageServer3.storage_port
+//         )
+//         SysLogger_INSTANCE_CONNECT_CLIENTS(
+//                 sysLogger,
+//                 tester_ramDisk,
+//                 tester_storageServer1,
+//                 tester_storageServer2,
+//                 tester_storageServer3
+//         )
 
-    configuration {
-        StorageServer_INSTANCE_CONFIGURE_CLIENTS(
-            storageServer,
-            (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
-            (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
-        )
+//     }
 
-        StorageServer_CLIENT_ASSIGN_BADGES(
-            tester_storageServer1.storage_rpc,
-            tester_storageServer2.storage_rpc,
-            tester_storageServer3.storage_rpc
-        )
+//     configuration {
+//         StorageServer_INSTANCE_CONFIGURE_CLIENTS(
+//             storageServer,
+//             (0 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
+//             (1 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ,
+//             (2 * STORAGE_SERVER_CLIENT_SZ), STORAGE_SERVER_CLIENT_SZ
+//         )
 
-        // Set drivers's priority to low so that printf() collisions with
-        // application layer are avoided. This is a temporary workaround.
-        // The application layer components have already synchronized printf()
-        // as they use SysLogger but it should be the same for the following
-        // components here below (those to which we are setting a lower
-        // priority).
-        // Furthermore this workaround by itself it is not sufficient to avoid
-        // collisions. The log level needs to be adjusted too (INFO level, not
-        // more verbose).
-        ramDisk._priority               = 1;
-        storageServer._priority         = 1;
-        storageServerStorage._priority  = 1;
-    }
-}
+//         StorageServer_CLIENT_ASSIGN_BADGES(
+//             tester_storageServer1.storage_rpc,
+//             tester_storageServer2.storage_rpc,
+//             tester_storageServer3.storage_rpc
+//         )
+
+//         // Set drivers's priority to low so that printf() collisions with
+//         // application layer are avoided. This is a temporary workaround.
+//         // The application layer components have already synchronized printf()
+//         // as they use SysLogger but it should be the same for the following
+//         // components here below (those to which we are setting a lower
+//         // priority).
+//         // Furthermore this workaround by itself it is not sufficient to avoid
+//         // collisions. The log level needs to be adjusted too (INFO level, not
+//         // more verbose).
+//         ramDisk._priority               = 1;
+//         storageServer._priority         = 1;
+//         storageServerStorage._priority  = 1;
+//     }
+// }

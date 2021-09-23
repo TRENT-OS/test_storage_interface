@@ -2,6 +2,7 @@
 
 #include "SysLogger/camkes/SysLogger.camkes"
 import <if_OS_Storage.camkes>;
+import <if_OS_Timer.camkes>;
 
 component StorageInterfaceTester {
     control;
@@ -10,4 +11,7 @@ component StorageInterfaceTester {
     // Storage Under Test interface
     uses     if_OS_Storage storage_rpc;
     dataport Buf           storage_port;
+
+    uses     if_OS_Timer timeServer_rpc;
+    consumes TimerReady  timeServer_notify;
 }

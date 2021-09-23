@@ -43,29 +43,32 @@ ChanMux_UART_COMPONENT_DEFINE(
 #include "Storage_ChanMux/Storage_ChanMux.camkes"
 Storage_ChanMux_COMPONENT_DEFINE(Storage_ChanMux)
 
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+
 assembly {
     composition {
-        // ChanMux_UART + UART
-        component ChanMux_UART chanMux_UART;
-        component UART_CHANMUX uart;
-        // Storage_ChanMux
-        component   Storage_ChanMux chanMuxStorage;
+        // // ChanMux_UART + UART
+        // component ChanMux_UART chanMux_UART;
+        // component UART_CHANMUX uart;
+        // // Storage_ChanMux
+        // component   Storage_ChanMux chanMuxStorage;
 
-        ChanMux_UART_INSTANCE_CONNECT(
-            chanMux_UART,
-            uart
-        )
-        ChanMux_UART_INSTANCE_CONNECT_CLIENT(
-            chanMux_UART,
-            chanMuxStorage, chan
-        )
+        // ChanMux_UART_INSTANCE_CONNECT(
+        //     chanMux_UART,
+        //     uart
+        // )
+        // ChanMux_UART_INSTANCE_CONNECT_CLIENT(
+        //     chanMux_UART,
+        //     chanMuxStorage, chan
+        // )
 
-        component   StorageInterfaceTester tester_chanMux;
+        // component   StorageInterfaceTester tester_chanMux;
 
-        Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
-            chanMuxStorage,
-            tester_chanMux.storage_rpc, tester_chanMux.storage_port
-        )
+        // Storage_ChanMux_INSTANCE_CONNECT_CLIENT(
+        //     chanMuxStorage,
+        //     tester_chanMux.storage_rpc, tester_chanMux.storage_port
+        // )
 
         component   StorageInterfaceTester tester_sdhc;
 
@@ -88,8 +91,17 @@ assembly {
         )
         SysLogger_INSTANCE_CONNECT_CLIENTS(
             sysLogger,
-            tester_chanMux,
+            // tester_chanMux,
             tester_sdhc
+        )
+        //----------------------------------------------------------------------
+        // TimeServer
+        //----------------------------------------------------------------------
+        component TimeServer timeServer;
+
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            tester_sdhc.timeServer_rpc,   tester_sdhc.timeServer_notify
         )
 
     }
@@ -104,15 +116,19 @@ assembly {
             tester_sdhc.storage_rpc
         )
 
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            tester_sdhc.timeServer_rpc
+        )
+
         // Use the platform specific default settings
         SdHostController_INSTANCE_CONFIGURE(sdhc)
         SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
 
-        ChanMux_UART_CLIENT_ASSIGN_BADGES(
-            chanMuxStorage.chanMux_Rpc
-        )
+        // ChanMux_UART_CLIENT_ASSIGN_BADGES(
+        //     chanMuxStorage.chanMux_Rpc
+        // )
 
         tester_sdhc._priority       = 110;
-        chanMuxStorage._priority    = 1;
+        // chanMuxStorage._priority    = 1;
     }
 }

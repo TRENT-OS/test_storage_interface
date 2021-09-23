@@ -36,3 +36,5 @@ void test_storage_writeReadEraseSizeTooLarge_neg();
 void test_storage_writeReadEraseSizeMax_neg();
 
 void test_storage_apiWithMediumNotPresent();
+
+void test_performance();

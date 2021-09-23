@@ -544,3 +544,91 @@ test_storage_apiWithMediumNotPresent()
     TEST_DEVICE_NOT_PRESENT(storage_rpc_getState(&flags));
     TEST_FINISH()
 }
+
+
+#include "TimeServer.h"
+
+//------------------------------------------------------------------------------
+static const if_OS_Timer_t timer =
+    IF_OS_TIMER_ASSIGN(
+        timeServer_rpc,
+        timeServer_notify);
+
+void
+generate_random_string(char *str, size_t len)
+{
+    const int lower = 33; // char: !
+    const int upper = 126; // char: ~
+    for (size_t i = 0; i < len; i++)
+    {
+        str[i] = rand() % (upper - lower + 1) + lower;
+    }
+}
+
+void
+test_performance()
+{
+    TEST_START();
+
+    Debug_LOG_INFO("Performance test");
+
+    const int test_size = 10 * 1024 * 1024; // 10MiB
+    const int str_size = 4096;
+    char my_data[str_size];
+
+    memset(storage_port, 0, str_size);
+    int sum = 0;
+    uint64_t time_a = 0;
+    uint64_t time_b = 0;
+    uint64_t delta = 0;
+
+    Debug_LOG_INFO("Write performance test.");
+    off_t offset = storageBeginOffset;
+    while(sum < test_size){
+        size_t bytesWritten = 0;
+
+        generate_random_string(my_data, str_size);
+        memcpy(storage_port, my_data, str_size);
+        TimeServer_getTime(&timer, TimeServer_PRECISION_MSEC,&time_a);
+        storage_rpc_write(offset, str_size, &bytesWritten);
+        TimeServer_getTime(&timer, TimeServer_PRECISION_MSEC,&time_b);
+        delta += (time_b - time_a);
+        if(bytesWritten != str_size){
+            Debug_LOG_ERROR("Problem in writing.");
+            return;
+        }
+        sum += str_size;
+        offset += str_size;
+        // offset = offset % (1024*1024);
+    }
+
+    Debug_LOG_INFO("Bytes written: %zu",test_size);
+    Debug_LOG_INFO("Time taken: %zu ms \n\n",delta);
+
+    Debug_LOG_INFO("Read performance test.");
+
+    offset = 0;
+    sum = 0;
+    delta = 0;
+    while (sum < test_size)
+    {
+        size_t bytesRead = 0;
+        TimeServer_getTime(&timer, TimeServer_PRECISION_MSEC,&time_a);
+        storage_rpc_read(offset, str_size, &bytesRead);
+        TimeServer_getTime(&timer, TimeServer_PRECISION_MSEC,&time_b);
+        delta += (time_b - time_a);
+        if(bytesRead != str_size){
+            Debug_LOG_ERROR("Problem in reading.");
+            return;
+        }
+        memcpy(my_data, storage_port, str_size);
+        sum += str_size;
+        offset += str_size;
+        // offset = offset % (1024*1024);
+    }
+
+    Debug_LOG_INFO("Bytes written: %zu",test_size);
+    Debug_LOG_INFO("Time taken: %zu ms",delta);
+
+    TEST_FINISH();
+}
