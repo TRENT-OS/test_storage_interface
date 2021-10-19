@@ -161,10 +161,7 @@ test_storage_size_pos()
 
     Debug_LOG_DEBUG("%s size is: %" PRIiMAX, get_instance_name(), storageSize);
 
-    // Storage shall be at least three times bigger than the test string, so
-    // that it can be stored at the beginning, in the center and at the end of
-    // the storage.
-    ASSERT_LE_UINT64((off_t)(3 * TEST_DATA_SIZE), storageSize);
+    ASSERT_LE_UINT64((off_t)(TEST_STORAGE_MIN_SIZE), storageSize);
 
     TEST_FINISH();
 }

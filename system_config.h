@@ -65,7 +65,7 @@
 /**
  * @brief   The minimum test storage size.
  *
- * @note    Must be at least three times the size of the test data array used in
- *          this test system.
+ * @note    Must be at least twice the size of the test data set used in this
+ *          test system.
  */
-#define TEST_STORAGE_MIN_SIZE   (3 * TEST_DATA_SIZE)
+#define TEST_STORAGE_MIN_SIZE   (2 * TEST_DATA_SIZE)

@@ -4,8 +4,8 @@
  * @file
  * @brief Generic storage interface tests
  *
- * It is indpendent of what the underlying storage is used. The only assumption
- * is that it is three times bigger than the test data.
+ * These tests are independent of what the underlying storage is used. The only
+ * assumption is that the storage is big enough (see TEST_STORAGE_MIN_SIZE).
  *
  */
 #pragma once
