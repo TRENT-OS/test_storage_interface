@@ -12,7 +12,7 @@
 // 1. BOOT_STORAGE_SIZE must be large enough to hold a boot script and the
 //    binary to boot (currently ~13 MiB).
 // 2. TESTAPP_STORAGE_SIZE must be at least three times bigger than the
-//    TEST_DATA_SZ (see test_storage_size_pos()).
+//    TEST_DATA_SIZE (see test_storage_size_pos()).
 //------------------------------------------------------------------------------
 #define MiB                     (1024 * 1024)
 

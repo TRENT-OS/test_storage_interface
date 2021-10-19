@@ -60,7 +60,7 @@
  *          unlikely that it collides with any block size, and also it is bigger
  *          than two blocks of common 512 bytes.
  */
-#define TEST_DATA_SZ 1237
+#define TEST_DATA_SIZE 1237
 
 /**
  * @brief   The minimum test storage size.
@@ -68,4 +68,4 @@
  * @note    Must be at least three times the size of the test data array used in
  *          this test system.
  */
-#define TEST_STORAGE_MIN_SIZE   (3 * TEST_DATA_SZ)
+#define TEST_STORAGE_MIN_SIZE   (3 * TEST_DATA_SIZE)

@@ -11,10 +11,10 @@ static const off_t storageBeginOffset = 0U;
 /**
  * @brief   Random data used in the test.
  *
- * @note    If TEST_DATA_SZ is changed, please update the content of this
+ * @note    If TEST_DATA_SIZE is changed, please update the content of this
  *          array as well, so that it is filled fully with random data.
  */
-static const char testData[TEST_DATA_SZ] =
+static const char testData[TEST_DATA_SIZE] =
     "537QNNHTI4PNJ207V9X4EQ6N7IT1S02EYBTUZOBDLL4IDSCDBJB6Y1QHX5JKIH6G"
     "05G73K3SIIFJ0D601PDZUM2N58472UBW5SO4T6YU8X7ZFH0LABTXLJ9GFNTR0A8Q"
     "AYTS13BDOOJM0M5J9PF51L3Z5M91SSJVFZI4TLJLXYHT5O9H3V3MK2W54I5FZQPA"
@@ -142,11 +142,11 @@ roundDownToBLockSize(
 { \
     TEST_START(); \
 \
-    memset(storage_port, 0, TEST_DATA_SZ); \
+    memset(storage_port, 0, TEST_DATA_SIZE); \
 \
-    TEST_WRITE(offset, testData, TEST_DATA_SZ); \
-    TEST_READ (offset, testData, TEST_DATA_SZ); \
-    TEST_ERASE(offset, TEST_DATA_SZ); \
+    TEST_WRITE(offset, testData, TEST_DATA_SIZE); \
+    TEST_READ (offset, testData, TEST_DATA_SIZE); \
+    TEST_ERASE(offset, TEST_DATA_SIZE); \
 \
     TEST_FINISH(); \
 } while (0)
@@ -164,7 +164,7 @@ test_storage_size_pos()
     // Storage shall be at least three times bigger than the test string, so
     // that it can be stored at the beginning, in the center and at the end of
     // the storage.
-    ASSERT_LE_UINT64((off_t)(3 * TEST_DATA_SZ), storageSize);
+    ASSERT_LE_UINT64((off_t)(3 * TEST_DATA_SIZE), storageSize);
 
     TEST_FINISH();
 }
@@ -228,7 +228,7 @@ test_storage_writeReadEraseEnd_pos()
 {
     off_t storageSize = 0U;
     TEST_SUCCESS(storage_rpc_getSize(&storageSize));
-    const off_t endOfStorage = storageSize - TEST_DATA_SZ - 1;
+    const off_t endOfStorage = storageSize - TEST_DATA_SIZE - 1;
 
     TEST_WRITE_READ_ERASE(endOfStorage);
 }
@@ -238,7 +238,7 @@ test_storage_writeReadEraseZeroBytes_pos()
 {
     TEST_START();
 
-    memset(storage_port, 0, TEST_DATA_SZ);
+    memset(storage_port, 0, TEST_DATA_SIZE);
 
     const off_t testOffset = 0;
 
@@ -332,7 +332,7 @@ test_storage_neighborRegionsUntouched_pos()
         untouchedBackContent,
         sizeof(untouchedBackContent));
 
-    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SZ;
+    const off_t untouchedBackAddress = testDataAddress + TEST_DATA_SIZE;
 
     Debug_LOG_TRACE("%s: Verifying the back region.", get_instance_name());
     TEST_WRITE(untouchedBackAddress, untouchedBack, untouchedBack_sz);
@@ -341,11 +341,11 @@ test_storage_neighborRegionsUntouched_pos()
 
     // Writing verifying and erasing the test data.
     Debug_LOG_TRACE("%s: Writing the test data.", get_instance_name());
-    TEST_WRITE(testDataAddress, testData, TEST_DATA_SZ);
+    TEST_WRITE(testDataAddress, testData, TEST_DATA_SIZE);
     Debug_LOG_TRACE("%s: Verifying the test data.", get_instance_name());
-    TEST_READ (testDataAddress, testData, TEST_DATA_SZ);
+    TEST_READ (testDataAddress, testData, TEST_DATA_SIZE);
     Debug_LOG_TRACE("%s: Erasing the test data.", get_instance_name());
-    TEST_ERASE(testDataAddress, TEST_DATA_SZ);
+    TEST_ERASE(testDataAddress, TEST_DATA_SIZE);
 
     Debug_LOG_TRACE(
         "%s: Verifying that front region was untouched.", get_instance_name());
@@ -364,7 +364,7 @@ test_storage_neighborRegionsUntouched_pos()
     //Clean up
     TEST_ERASE(
         untouchedFrontAddress,
-        (untouchedFront_sz + TEST_DATA_SZ + untouchedBack_sz));
+        (untouchedFront_sz + TEST_DATA_SIZE + untouchedBack_sz));
 
     TEST_FINISH();
 
@@ -383,7 +383,7 @@ test_storage_neighborRegionsUntouched_pos()
         "roundedDownSize = %zu)",  \
         get_instance_name(), offset, size, roundedDownSize); \
 \
-    memcpy(storage_port, testData, TEST_DATA_SZ); \
+    memcpy(storage_port, testData, TEST_DATA_SIZE); \
 \
     TEST_NOT_SUCCESS( \
         storage_rpc_write(offset, roundedDownSize, &bytesWritten)); \
@@ -402,7 +402,7 @@ test_storage_neighborRegionsUntouched_pos()
         "roundedDownSize = %zu)",  \
         get_instance_name(), offset, size, roundedDownSize); \
 \
-    memset(storage_port, 0, TEST_DATA_SZ); \
+    memset(storage_port, 0, TEST_DATA_SIZE); \
     TEST_NOT_SUCCESS( \
         storage_rpc_read(offset, roundedDownSize, &bytesRead)); \
 \
@@ -442,9 +442,9 @@ void
 test_storage_writeReadEraseLargerThanBuf_neg ()
 {
     // Writing more bytes than the dataport size.
-    const off_t dataport_size = sizeof(storage_port) + TEST_DATA_SZ;
+    const off_t dataport_size = sizeof(storage_port) + TEST_DATA_SIZE;
 
-    TEST_WRITE_READ_ERASE_NEG(dataport_size, (off_t)TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(dataport_size, (off_t)TEST_DATA_SIZE);
 }
 
 void
@@ -453,15 +453,15 @@ test_storage_writeReadEraseOutside_neg()
     off_t storageSize = 0U;
     TEST_SUCCESS(storage_rpc_getSize(&storageSize));
 
-    TEST_WRITE_READ_ERASE_NEG(storageSize, (off_t)TEST_DATA_SZ);
+    TEST_WRITE_READ_ERASE_NEG(storageSize, (off_t)TEST_DATA_SIZE);
 }
 
 void
 test_storage_writeReadEraseNegOffset_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
-        -((off_t)TEST_DATA_SZ),
-        (off_t)TEST_DATA_SZ);
+        -((off_t)TEST_DATA_SIZE),
+        (off_t)TEST_DATA_SIZE);
 }
 
 void
@@ -469,7 +469,7 @@ test_storage_writeReadEraseIntMax_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
         (off_t)INTMAX_MAX,
-        (off_t)TEST_DATA_SZ);
+        (off_t)TEST_DATA_SIZE);
 }
 
 void
@@ -477,7 +477,7 @@ test_storage_writeReadEraseIntMin_neg()
 {
     TEST_WRITE_READ_ERASE_NEG(
         (off_t)INTMAX_MIN,
-        (off_t)TEST_DATA_SZ);
+        (off_t)TEST_DATA_SIZE);
 }
 
 void
