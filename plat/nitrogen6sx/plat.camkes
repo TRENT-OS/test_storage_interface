@@ -112,7 +112,6 @@ assembly {
             chanMuxStorage.chanMux_Rpc
         )
 
-        tester_sdhc._priority       = 110;
-        chanMuxStorage._priority    = 1;
+        chanMuxStorage.priority = 50;
     }
 }

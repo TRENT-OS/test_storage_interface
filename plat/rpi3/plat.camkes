@@ -72,7 +72,5 @@ assembly {
         SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
 
         CONFIGURE_INSTANCE_SD_DRV(sdhc, PAGE_SIZE)
-
-        tester_sdhc._priority = 110;
     }
 }

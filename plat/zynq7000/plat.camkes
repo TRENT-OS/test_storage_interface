@@ -52,6 +52,6 @@ assembly {
             chanMuxStorage.chanMux_Rpc
         )
 
-        chanMuxStorage._priority    = 1;
+        chanMuxStorage.priority = 50;
     }
 }

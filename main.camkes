@@ -76,8 +76,8 @@ assembly {
         // Furthermore this workaround by itself it is not sufficient to avoid
         // collisions. The log level needs to be adjusted too (INFO level, not
         // more verbose).
-        ramDisk._priority               = 1;
-        storageServer._priority         = 1;
-        storageServerStorage._priority  = 1;
+        ramDisk.priority                = 30;
+        storageServerStorage.priority   = 20;
+        storageServer.priority          = 10;
     }
 }
