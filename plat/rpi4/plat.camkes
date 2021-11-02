@@ -67,7 +67,5 @@ assembly {
         // Use the platform specific default settings
         SdHostController_INSTANCE_CONFIGURE(sdhc)
         SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
-
-        CONFIGURE_INSTANCE_SD_DRV(sdhc, PAGE_SIZE)
     }
 }
