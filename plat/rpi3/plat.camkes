@@ -33,7 +33,6 @@ SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
 
 assembly {
     composition {
-
         component   StorageInterfaceTester tester_sdhc;
 
         // SDHC
@@ -54,11 +53,9 @@ assembly {
             tester_sdhc.storage_rpc, tester_sdhc.storage_port
         )
         SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
-
     }
 
     configuration {
-
         StorageServer_INSTANCE_CONFIGURE_CLIENTS(
             storageServerSd,
             TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
