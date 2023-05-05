@@ -45,8 +45,14 @@ StorageServer_DeclareCAmkESComponent(
     StorageServer
 )
 
-SdHostController_DeclareCAmkESComponent(
-    SdHostController
+TimeServer_DeclareCAmkESComponent(
+    TimeServer
+)
+
+RPi_SPI_Flash_DeclareCAmkESComponent(
+    RPi_SPI_Flash
+    LIBS
+        TimeServer_client
 )
 
 DeclareCAmkESComponent_SysLogger(

@@ -14,58 +14,73 @@
 #define PAGE_SIZE               4096
 
 // Reserved for GPT
-#define GPT_STORAGE_SIZE        (1 * MiB)
+#define GPT_STORAGE_SIZE        0
 
-#define BOOT_STORAGE_OFFSET     GPT_STORAGE_SIZE
-#define BOOT_STORAGE_SIZE       (128 * MiB)
+#define BOOT_STORAGE_OFFSET     0
+#define BOOT_STORAGE_SIZE       0
 
 #define TESTAPP_STORAGE_OFFSET  (BOOT_STORAGE_OFFSET + BOOT_STORAGE_SIZE)
-#define TESTAPP_STORAGE_SIZE    (128 * MiB)
+#define TESTAPP_STORAGE_SIZE    (8 * MiB)
 
 //------------------------------------------------------------------------------
 // Platform related CAmkES definitions
 //------------------------------------------------------------------------------
 
 #include "syslog.camkes"
-#include "SdHostController/SdHostController.camkes"
-SdHostController_COMPONENT_DEFINE(SdHostController);
-SdHostController_HW_COMPONENT_DEFINE(SdHostController_HW);
+#include "TimeServer/camkes/TimeServer.camkes"
+TimeServer_COMPONENT_DEFINE(TimeServer)
+#include "RPi_SPI_Flash/RPi_SPI_Flash.camkes"
+RPi_SPI_Flash_COMPONENT_DEFINE(RPi_SPI_Flash)
+RPi_SPI_Flash_HW_COMPONENT_DEFINE(RPi_SPI_Flash_HW)
 
 assembly {
     composition {
-        component   StorageInterfaceTester tester_sdhc;
+        component   StorageInterfaceTester tester_flash;
 
-        // SDHC
-        component   SdHostController_HW     sdhcHw;
-        component   SdHostController        sdhc;
-        SdHostController_INSTANCE_CONNECT(
-            sdhc, sdhcHw
+        // SPI Flash
+        component   RPi_SPI_Flash       flash;
+        component   RPi_SPI_Flash_HW    flash_hw;
+
+        RPi_SPI_Flash_INSTANCE_CONNECT(
+            flash,
+            flash_hw
         )
 
         // StorageServer
-        component   StorageServer   storageServerSd;
+        component   StorageServer   storageServerFlash;
         StorageServer_INSTANCE_CONNECT(
-            storageServerSd,
-            sdhc.storage_rpc, sdhc.storage_port
+            storageServerFlash,
+            flash.storage_rpc, flash.storage_port
         )
         StorageServer_INSTANCE_CONNECT_CLIENTS(
-            storageServerSd,
-            tester_sdhc.storage_rpc, tester_sdhc.storage_port
+            storageServerFlash,
+            tester_flash.storage_rpc, tester_flash.storage_port
         )
-        SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_sdhc)
+        SysLogger_INSTANCE_CONNECT_CLIENTS(sysLogger, tester_flash)
+
+        component TimeServer timeServer;
+
+        TimeServer_INSTANCE_CONNECT_CLIENTS(
+            timeServer,
+            flash.timeServer_rpc, flash.timeServer_notify
+        )
     }
 
     configuration {
         StorageServer_INSTANCE_CONFIGURE_CLIENTS(
-            storageServerSd,
+            storageServerFlash,
             TESTAPP_STORAGE_OFFSET, TESTAPP_STORAGE_SIZE
         )
         StorageServer_CLIENT_ASSIGN_BADGES(
-            tester_sdhc.storage_rpc
+            tester_flash.storage_rpc
         )
 
-        // Use the platform specific default settings
-        SdHostController_INSTANCE_CONFIGURE(sdhc)
-        SdHostController_HW_INSTANCE_CONFIGURE(sdhcHw)
+        TimeServer_CLIENT_ASSIGN_BADGES(
+            flash.timeServer_rpc
+        )
+
+        RPi_SPI_Flash_HW_INSTANCE_CONFIGURE_SELF(
+            flash_hw
+        )
     }
 }
